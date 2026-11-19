@@ -1,0 +1,6149 @@
+{
+  "schema": "leadbot.reviewed-catalog.v1",
+  "version": "2026-10-23.185",
+  "automatic_delivery_enabled": false,
+  "rules": [
+    {
+      "id": "countertop-cut",
+      "family": "furniture",
+      "profile": "mnc",
+      "match": "(?:столешниц\\w*.{0,55}(?:дырк|отверсти)\\w*.{0,30}(?:вырез|выпил|пропил|просверл)|(?:вырез|выпил|пропил|просверл)\\w*.{0,35}(?:дырк|отверсти)\\w*.{0,20}столешниц)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0329"
+      ],
+      "matrix_rows": [],
+      "questions": [
+        "countertop_material"
+      ],
+      "exclude": "раковин|мойк"
+    },
+    {
+      "id": "gas",
+      "family": "appliance",
+      "profile": "bt",
+      "match": "(?:газов\\w*.{0,30}(?:плит|духов|бойлер|колонк|кот[её]л)|(?:плит|духов|бойлер|колонк|кот[её]л).{0,30}газов)",
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0389",
+        "DOC-L0401"
+      ],
+      "matrix_rows": [
+        15,
+        25,
+        64,
+        203,
+        238
+      ],
+      "questions": [],
+      "exclude": "не\\s+газов|без\\s+газ"
+    },
+    {
+      "id": "oven-door",
+      "family": "oven",
+      "profile": "bt",
+      "match": "(?:духов|плит|варочн).{0,70}(?:двер|стекл)|(?:двер|стекл).{0,70}(?:духов|плит|варочн)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0399",
+        "DOC-L0400",
+        "DOC-L0471"
+      ],
+      "matrix_rows": [
+        17,
+        18,
+        249
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "oven-portable",
+      "family": "oven",
+      "profile": "bt",
+      "match": "(?:переносн|компактн|настольн).{0,25}плит|плит.{0,25}(?:переносн|компактн|настольн)",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0398"
+      ],
+      "matrix_rows": [
+        16
+      ],
+      "questions": [
+        "induction"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "oven-connect",
+      "family": "oven",
+      "profile": "bt",
+      "match": "(?:подключ|установ).{0,40}(?:плит|духов|варочн)|(?:плит|духов|варочн).{0,40}подключ",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0402"
+      ],
+      "matrix_rows": [
+        14
+      ],
+      "questions": [
+        "electrics_ready"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "oven",
+      "family": "oven",
+      "profile": "bt",
+      "match": "электроплит|духов|варочн|индукционн.*плит",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0397"
+      ],
+      "matrix_rows": [
+        13,
+        19
+      ],
+      "questions": [
+        "gas_type",
+        "model"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "washer-old",
+      "family": "washer",
+      "profile": "bt",
+      "match": "малютк|рига.?54|волга.?8|ручн\\w*.{0,15}отжим",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0421"
+      ],
+      "matrix_rows": [
+        4
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "washer-connect",
+      "family": "washer",
+      "profile": "bt",
+      "match": "(?:подключ|установ).{0,45}(?:стиральн|сушильн|посудомо)|(?:стиральн|сушильн|посудомо).{0,45}подключ",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0413",
+        "DOC-L0420"
+      ],
+      "matrix_rows": [
+        2,
+        12
+      ],
+      "questions": [
+        "plumbing_ready",
+        "model"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "washer",
+      "family": "washer",
+      "profile": "bt",
+      "match": "стирал(?:ьн|к)|машинк\\w*.{0,40}(?:стирк|полуавтомат)|(?:стирк|полуавтомат).{0,40}машинк|сушильн.{0,15}машин|сушил.{0,15}(?:bosch|beko|samsung)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0416",
+        "DOC-L0417",
+        "DOC-L0418",
+        "DOC-L0419"
+      ],
+      "matrix_rows": [
+        1,
+        3,
+        6
+      ],
+      "questions": [
+        "model",
+        "load",
+        "connection"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "dishwasher",
+      "family": "dishwasher",
+      "profile": "bt",
+      "match": "посудомо",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0412",
+        "DOC-L0414"
+      ],
+      "matrix_rows": [
+        11
+      ],
+      "questions": [
+        "model",
+        "connection"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "boiler-leak",
+      "family": "boiler",
+      "profile": "bt",
+      "match": "(?:бойлер|водонагрев)\\w*.{0,45}(?:теч|протек|капает)|(?:теч|протек|капает).{0,45}(?:бойлер|водонагрев)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0390"
+      ],
+      "matrix_rows": [
+        26
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "boiler-install",
+      "family": "boiler",
+      "profile": "bt",
+      "match": "(?:установ|подключ).{0,40}(?:бойлер|водонагрев)|(?:бойлер|водонагрев).{0,40}(?:установ|подключ)",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0388",
+        "DOC-L0391",
+        "DOC-L0392"
+      ],
+      "matrix_rows": [
+        24
+      ],
+      "questions": [
+        "gas_type",
+        "plumbing_ready",
+        "boiler_access",
+        "model"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "boiler",
+      "family": "boiler",
+      "profile": "bt",
+      "match": "бойлер|водонагрев|\\bкот(?:[её]л|л(?:а|у|е|ом|ы|ов|ам|ами|ах))\\b",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0387",
+        "DOC-L0391",
+        "DOC-L0392"
+      ],
+      "matrix_rows": [
+        23
+      ],
+      "questions": [
+        "gas_type",
+        "model",
+        "boiler_access",
+        "connection"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "coffee",
+      "family": "coffee",
+      "profile": "bt",
+      "match": "кофемаш|кофевар",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0404",
+        "DOC-L0405",
+        "DOC-L0406"
+      ],
+      "matrix_rows": [
+        27,
+        28
+      ],
+      "questions": [
+        "coffee_type",
+        "model"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "aircon",
+      "family": "aircon",
+      "profile": "bt",
+      "match": "кондиционер|сплит.?систем",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0408",
+        "DOC-L0410"
+      ],
+      "matrix_rows": [
+        29,
+        252
+      ],
+      "questions": [
+        "outdoor_access"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "hood",
+      "family": "hood",
+      "profile": "bt",
+      "match": "вытяжк",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0394",
+        "DOC-L0395"
+      ],
+      "matrix_rows": [
+        30
+      ],
+      "questions": [
+        "room"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "fridge",
+      "family": "fridge",
+      "profile": "bt",
+      "match": "холодиль|морозил|морозильн.*лар|винн\\w*.{0,12}шкаф|холодильн.*витрин",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0447",
+        "DOC-L0448",
+        "DOC-L0449",
+        "DOC-L0450"
+      ],
+      "matrix_rows": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "questions": [
+        "model"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "industrial",
+      "family": "any",
+      "profile": "any",
+      "match": "промышленн|промышл[её]нн|производственн.*оборуд",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0466"
+      ],
+      "matrix_rows": [
+        5,
+        57,
+        255
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "appearance",
+      "family": "any",
+      "profile": "any",
+      "match": "реставр|перетяж|ротанг|полиров|вмятин|отбелив|ржавчин|покраск|устран.*царапин|(?:\\bскол(?!ьк)|царапин).{0,100}(?:\\bвоск(?:а|ом|у|е)?\\b|лакир|лак\\b)|(?:\\bвоск(?:а|ом|у|е)?\\b|лакир|лак\\b).{0,100}(?:\\bскол(?!ьк)|царапин)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0325",
+        "DOC-L0470"
+      ],
+      "matrix_rows": [
+        54,
+        164,
+        184,
+        256
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "body-handles",
+      "family": "appliance",
+      "profile": "bt",
+      "match": "(?:замен|ремонт).{0,25}(?:корпус|ручк|ножк)|(?:корпус|ручк|ножк).{0,25}(?:замен|ремонт)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0467",
+        "DOC-L0468"
+      ],
+      "matrix_rows": [
+        55,
+        56
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "pc-special-software",
+      "family": "pc",
+      "profile": "kp",
+      "match": "autocad|auto.?cad|3d.?max|photoshop|premiere|компас|\\b1с\\b|битрикс|узкопрофильн",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0126",
+        "DOC-L0137",
+        "DOC-L0138"
+      ],
+      "matrix_rows": [
+        74,
+        75
+      ],
+      "questions": [
+        "software_use",
+        "license"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "pc-server",
+      "family": "pc",
+      "profile": "kp",
+      "match": "сервер|server",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0141"
+      ],
+      "matrix_rows": [
+        88
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "pc-quest",
+      "family": "pc",
+      "profile": "kp",
+      "match": "oculus|meta.?quest|окулус",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0145"
+      ],
+      "matrix_rows": [
+        81
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "pc-display-special",
+      "family": "pc",
+      "profile": "kp",
+      "match": "калибров|поляризацион|гравиров|царапин.*экран",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "matrix_rows": [
+        87,
+        90,
+        91,
+        92,
+        97,
+        99,
+        100
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "pc-creation",
+      "family": "pc",
+      "profile": "kp",
+      "match": "созда\\w*.{0,25}(?:сайт|презентац|документ)|монтаж.{0,12}видео|обработк.{0,12}фото|пиратск",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0139",
+        "DOC-L0142"
+      ],
+      "matrix_rows": [
+        86,
+        89
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "pc-icloud",
+      "family": "pc",
+      "profile": "kp",
+      "match": "(?:icloud|айклауд|айклад).{0,60}(?:макбук|macbook)|(?:макбук|macbook).{0,60}(?:icloud|айклауд|айклад)",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0133",
+        "DOC-L0146"
+      ],
+      "matrix_rows": [
+        83
+      ],
+      "questions": [
+        "owner_access"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "pc-assembly",
+      "family": "pc",
+      "profile": "kp",
+      "match": "(?:собра|сборк).{0,35}(?:компьютер|\\bпк\\b)|(?:компьютер|\\bпк\\b).{0,35}(?:собра|сборк)",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0130"
+      ],
+      "matrix_rows": [
+        79
+      ],
+      "questions": [
+        "pc_parts"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "pc-peripheral",
+      "family": "pc",
+      "profile": "kp",
+      "match": "клавиатур|мыш[ьи]|рул[ья]|\\bvr\\b",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0128",
+        "DOC-L0129",
+        "DOC-L0131"
+      ],
+      "matrix_rows": [
+        77,
+        78,
+        80
+      ],
+      "questions": [
+        "has_pc"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "pc",
+      "family": "pc",
+      "profile": "kp",
+      "match": "компьютер|\\bноут\\w*|моноблок|\\bпк\\b|макбук|macbook|windows|\\bвинд(?:оус|овс|а|у|ы|е|ой|ою)\\b|office|биос|bios",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0124",
+        "DOC-L0125",
+        "DOC-L0132",
+        "DOC-L0134",
+        "DOC-L0135"
+      ],
+      "matrix_rows": [
+        72,
+        73,
+        76,
+        82,
+        84,
+        85
+      ],
+      "questions": [
+        "model",
+        "keep_data"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "monitor-matrix",
+      "family": "monitor",
+      "profile": "kp",
+      "match": "(?:монитор).{0,65}(?:матриц|разбит|полос)|(?:матриц|разбит|полос).{0,65}монитор",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0156"
+      ],
+      "matrix_rows": [
+        98
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "monitor",
+      "family": "monitor",
+      "profile": "kp",
+      "match": "монитор",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0150",
+        "DOC-L0151"
+      ],
+      "matrix_rows": [
+        93,
+        94
+      ],
+      "questions": [
+        "model"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "gpu",
+      "family": "gpu",
+      "profile": "kp",
+      "match": "видеокарт",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0152",
+        "DOC-L0153"
+      ],
+      "matrix_rows": [
+        95,
+        96
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "cable-fibre",
+      "family": "cable",
+      "profile": "kp",
+      "match": "оптоволок|(?:пролож|проклад|нараст|покуп)[^\\n.!?;]{0,45}(?:кабел|провод|вит\\w*\\s+пар|патч.?корд)|(?:кабел|провод|вит\\w*\\s+пар|патч.?корд)[^\\n.!?;]{0,45}(?:пролож|проклад|нараст|покуп)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0165",
+        "DOC-L0166"
+      ],
+      "matrix_rows": [
+        102,
+        103
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "cable-crimp",
+      "family": "cable",
+      "profile": "kp",
+      "match": "обжим|вит[аяую]+ пар|патч.?корд|коннектор|rj.?45|интернет.?кабел",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0159",
+        "DOC-L0160",
+        "DOC-L0161",
+        "DOC-L0162",
+        "DOC-L0163"
+      ],
+      "matrix_rows": [
+        101
+      ],
+      "questions": [
+        "cable_type",
+        "cable_operation"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "router-modem",
+      "family": "router",
+      "profile": "kp",
+      "match": "модем|(?:симочн|сим.?карт|\\bsim\\b).{0,35}роутер|роутер.{0,35}(?:симочн|сим.?карт|\\bsim\\b)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0176",
+        "DOC-L0177",
+        "DOC-L0178"
+      ],
+      "matrix_rows": [
+        108,
+        109
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "router-repair",
+      "family": "router",
+      "profile": "kp",
+      "match": "(?:роутер|router).{0,45}(?:ремонт|прошив|прошить|перепрош|сгор|слом)|(?:ремонт|прошив|прошить|перепрош|сгор|слом).{0,45}(?:роутер|router)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0173",
+        "DOC-L0174"
+      ],
+      "matrix_rows": [
+        107
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "router",
+      "family": "router",
+      "profile": "kp",
+      "match": "роутер|router",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0170",
+        "DOC-L0171",
+        "DOC-L0175"
+      ],
+      "matrix_rows": [
+        104,
+        105
+      ],
+      "questions": [
+        "internet"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "repeater",
+      "family": "repeater",
+      "profile": "kp",
+      "match": "репитер|усилител.{0,18}(?:wi.?fi|вай.?фай)|расширител.{0,18}(?:wi.?fi|вай.?фай)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0172"
+      ],
+      "matrix_rows": [
+        106
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "printer-cartridge",
+      "family": "printer",
+      "profile": "kp",
+      "match": "картридж|тонер",
+      "status": "conflict",
+      "primary_refs": [
+        "DOC-L0186",
+        "TG1-589",
+        "TG1-589"
+      ],
+      "matrix_rows": [
+        113,
+        243
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "printer-special",
+      "family": "printer",
+      "profile": "kp",
+      "match": "снпч|3d.?принтер|термопринтер|пищев\\w*.{0,10}принтер|широкоформат|сублимацион|фотонн|матричн.*принтер|маркировочн|уф.?принтер|переделан",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0182",
+        "DOC-L0184",
+        "DOC-L0185",
+        "DOC-L0187",
+        "DOC-L0188"
+      ],
+      "matrix_rows": [
+        111,
+        112,
+        114
+      ],
+      "questions": [
+        "printer_service",
+        "printer_pc"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "printer",
+      "family": "printer",
+      "profile": "kp",
+      "match": "принтер|мфу|сканер|копир|(?:сброс|обнул).{0,30}памперс|hp\\s+deskjet\\b|hp\\s+laserjet\\b|canon\\s+pixma\\b|печатающ\\w*\\s+голов|ролик\\w*\\s+(?:захват\\w*|подач\\w*)\\s+бумаг",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0181",
+        "DOC-L0189"
+      ],
+      "matrix_rows": [
+        110
+      ],
+      "questions": [
+        "model",
+        "printer_connection"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "data",
+      "family": "data",
+      "profile": "kp",
+      "match": "восстанов.{0,30}(?:данн|информац|файл|фото)|(?:данн|информац|файл|фото).{0,30}восстанов",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "matrix_rows": [
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71
+      ],
+      "questions": [
+        "data_device",
+        "data_condition"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "phone-repair",
+      "family": "phone",
+      "profile": "kp",
+      "match": "(?:телефон|планшет|смартфон|айфон|iphone|ipad).{0,45}(?:ремонт|разбит|прошив|разблок|не включ)|(?:ремонт|разбит|прошив|разблок).{0,45}(?:телефон|планшет|смартфон|айфон|iphone|ipad)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0234",
+        "DOC-L0235",
+        "DOC-L0236"
+      ],
+      "matrix_rows": [
+        140,
+        141,
+        142,
+        242
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "phone-bank-film",
+      "family": "phone",
+      "profile": "kp",
+      "match": "(?:банк|банковск).{0,40}(?:iphone|айфон|ipad)|(?:стекл|пл[её]нк).{0,40}(?:телефон|планшет|смартфон)|(?:стационарн|кнопочн).{0,12}телефон",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0237",
+        "DOC-L0239",
+        "DOC-L0240"
+      ],
+      "matrix_rows": [
+        143,
+        144,
+        145
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "phone-access",
+      "family": "phone",
+      "profile": "kp",
+      "match": "icloud|айклауд|google.*аккаунт|гугл.*аккаунт",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0230",
+        "DOC-L0238"
+      ],
+      "matrix_rows": [
+        137,
+        244
+      ],
+      "questions": [
+        "owner_access"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "phone",
+      "family": "phone",
+      "profile": "kp",
+      "match": "телефон|планшет|смартфон|айфон|iphone|ipad",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0227",
+        "DOC-L0228",
+        "DOC-L0229",
+        "DOC-L0231",
+        "DOC-L0232"
+      ],
+      "matrix_rows": [
+        134,
+        135,
+        136,
+        138,
+        139
+      ],
+      "questions": [
+        "problem"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "console-repair",
+      "family": "console",
+      "profile": "kp",
+      "match": "(?:\\bps[345]?\\b|\\bпс\\s*[345]\\b|playstation|xbox|nintendo|switch|steam.?deck).{0,40}(?:ремонт|прошив|не включ)|(?:ремонт|прошив).{0,40}(?:\\bps[345]?\\b|\\bпс\\s*[345]\\b|playstation|xbox|nintendo|switch|steam.?deck)|xbox.{0,30}настро|настро.{0,30}xbox",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0246"
+      ],
+      "matrix_rows": [
+        148,
+        149
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "console",
+      "family": "console",
+      "profile": "kp",
+      "match": "\\bps[345]?\\b|\\bпс\\s*[345]\\b|playstation|nintendo|switch|steam.?deck|xbox",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0243",
+        "DOC-L0244"
+      ],
+      "matrix_rows": [
+        146,
+        147,
+        235,
+        236
+      ],
+      "questions": [
+        "console_service"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "tv-mount",
+      "family": "tv",
+      "profile": "shared",
+      "match": "(?:повес|навес|креплен|установ).{0,40}(?:телевиз|\\bтв\\b|кронштейн)|(?:телевиз|\\bтв\\b).{0,40}(?:повес|навес|креплен|кронштейн)",
+      "status": "conditional_mount",
+      "primary_refs": [
+        "DOC-L0209",
+        "DOC-L0350"
+      ],
+      "matrix_rows": [
+        48,
+        130,
+        191,
+        230
+      ],
+      "questions": [
+        "wall",
+        "materials"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "tv-satellite",
+      "family": "tv",
+      "profile": "shared",
+      "match": "спутников|триколор|нтв\\s*\\+|тарелк",
+      "status": "conflict",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433",
+        "TG1-612",
+        "TG1-612",
+        "TG1-612"
+      ],
+      "matrix_rows": [
+        42,
+        124,
+        229
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "tv-outdoor",
+      "family": "tv",
+      "profile": "shared",
+      "match": "наружн\\w*.{0,20}антенн|антенн.{0,20}(?:крыше|улице|наружн)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433"
+      ],
+      "matrix_rows": [
+        41,
+        123,
+        228
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "tv-film",
+      "family": "tv",
+      "profile": "shared",
+      "match": "(?:поляризацион|ножк|подставк).{0,45}(?:телевиз|\\bтв\\b)|(?:телевиз|\\bтв\\b).{0,45}(?:поляризацион|ножк|подставк)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0211",
+        "DOC-L0436"
+      ],
+      "matrix_rows": [
+        49,
+        131,
+        231
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "tv-matrix",
+      "family": "tv",
+      "profile": "shared",
+      "match": "(?:телевиз|\\bтв\\b).{0,70}(?:матриц|(?:разбит|тресну|поврежден|сломан).{0,15}экран|экран.{0,15}(?:разбит|тресну|поврежден|сломан)|полос)|(?:матриц|(?:разбит|тресну|поврежден|сломан).{0,15}экран|экран.{0,15}(?:разбит|тресну|поврежден|сломан)|полос).{0,70}(?:телевиз|\\bтв\\b)",
+      "status": "matrix",
+      "primary_refs": [
+        "DOC-L0214",
+        "DOC-L0223",
+        "DOC-L0224",
+        "DOC-L0439",
+        "DOC-L0445",
+        "DOC-L0446",
+        "TG1-566",
+        "TG1-566",
+        "TG1-566",
+        "TG1-566",
+        "TG1-566"
+      ],
+      "matrix_rows": [
+        34,
+        35,
+        36,
+        118,
+        220
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "tv-channels",
+      "family": "tv",
+      "profile": "shared",
+      "match": "(?:настро|пропал|не лов).{0,25}канал|канал.{0,25}(?:настро|пропал|не лов)",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0202",
+        "DOC-L0203",
+        "DOC-L0204",
+        "DOC-L0205"
+      ],
+      "matrix_rows": [
+        39,
+        121,
+        227
+      ],
+      "questions": [
+        "antenna"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "tv-box-repair",
+      "family": "tv",
+      "profile": "shared",
+      "match": "(?:приставк|ресивер|кинотеатр).{0,35}(?:ремонт|прошив|слом|не включ)|(?:ремонт|прошив).{0,35}(?:приставк|ресивер|кинотеатр)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0210",
+        "DOC-L0435"
+      ],
+      "matrix_rows": [
+        44,
+        126,
+        233
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "tv-setup",
+      "family": "tv",
+      "profile": "shared",
+      "match": "(?:настро|подключ|vpn|пульт|прошив|приложен|smart|iptv).{0,50}(?:телевиз|\\bтв\\b|кинотеатр|приставк|ресивер)|(?:телевиз|\\bтв\\b|кинотеатр|приставк|ресивер).{0,50}(?:настро|подключ|vpn|пульт|прошив|приложен|smart|iptv)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "matrix_rows": [
+        38,
+        40,
+        43,
+        45,
+        46,
+        120,
+        122,
+        125,
+        127,
+        128,
+        224,
+        225,
+        226,
+        232,
+        234
+      ],
+      "questions": [
+        "tv_type"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "tv",
+      "family": "tv",
+      "profile": "shared",
+      "match": "телевиз|\\bтв\\b|\\btv\\b",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "matrix_rows": [
+        31,
+        32,
+        37,
+        47,
+        50,
+        115,
+        116,
+        119,
+        129,
+        132,
+        216,
+        217,
+        219,
+        221,
+        222,
+        223
+      ],
+      "questions": [
+        "tv_type",
+        "model",
+        "screen_damage"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "plumbing-tap",
+      "family": "tap",
+      "profile": "mnc",
+      "match": "смесител|сифон|\\bкран(?:а|у|ом|е|ы|ов|ам|ами|ах)?\\b|(?:теч|подтек|кап|замен|помен)\\w*[^.!?\\n]{0,20}\\bгусак\\b|\\bгусак\\b[^.!?\\n]{0,20}(?:теч|подтек|кап|замен|помен)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0262",
+        "DOC-L0263",
+        "DOC-L0264"
+      ],
+      "matrix_rows": [
+        159
+      ],
+      "questions": [
+        "room"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "towel",
+      "family": "towel",
+      "profile": "mnc",
+      "match": "полотенце\\s*сушител",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0266",
+        "DOC-L0267",
+        "DOC-L0268"
+      ],
+      "matrix_rows": [
+        160
+      ],
+      "questions": [
+        "water_shutoff"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "sink-hole",
+      "family": "sink",
+      "profile": "mnc",
+      "match": "(?:врез|вырез|просверл|сверл)\\w*.{0,25}отверсти\\w*\\s+(?:в|на)\\s+(?:(?:самой|саму|новой|старой|металлической)\\s+)?(?:раковин|мойк)|(?:просверл|сверл)\\w*\\s+(?:(?:саму|новую|старую)\\s+)?(?:раковин|мойк)|(?:раковин|мойк)\\w*.{0,18}(?:врезк|сверл)\\w*\\s+(?:техническ\\w*\\s+)?отверсти|(?:врез|вырез|просверл|сверл)\\w*\\s+(?:в|на)\\s+(?:(?:самой|новой|старой)\\s+)?(?:раковин|мойк)\\w*.{0,20}отверсти",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0271",
+        "DOC-L0329"
+      ],
+      "matrix_rows": [
+        162
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "sink",
+      "family": "sink",
+      "profile": "mnc",
+      "match": "раковин|\\bмойк",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0270",
+        "DOC-L0271",
+        "DOC-L0272"
+      ],
+      "matrix_rows": [
+        161
+      ],
+      "questions": [
+        "countertop_material"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "bath",
+      "family": "bath",
+      "profile": "mnc",
+      "match": "(?:установ|замен|ремонт|теч|герметиз|собра|сборк).{0,30}(?:ванн|душев)|(?:ванн|душев).{0,30}(?:теч|установ|замен|ремонт|герметиз)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0274",
+        "DOC-L0275",
+        "DOC-L0276"
+      ],
+      "matrix_rows": [
+        163
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "toilet",
+      "family": "toilet",
+      "profile": "mnc",
+      "match": "унитаз|биде|писсуар|инсталляци\\w*.{0,35}(?:смыв|бачок|вод[аы])|(?:смыв|бачок).{0,35}инсталляц",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0278",
+        "DOC-L0279",
+        "DOC-L0280"
+      ],
+      "matrix_rows": [
+        165
+      ],
+      "questions": [
+        "toilet_type"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "pipes-riser",
+      "family": "pipes",
+      "profile": "mnc",
+      "match": "стояк|канализационн.*труб|отоплен|радиатор|батаре",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0284",
+        "DOC-L0286"
+      ],
+      "matrix_rows": [
+        169,
+        170
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "pipes",
+      "family": "pipes",
+      "profile": "mnc",
+      "match": "труб",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0282",
+        "DOC-L0283",
+        "DOC-L0285",
+        "DOC-L0287"
+      ],
+      "matrix_rows": [
+        166,
+        167,
+        168
+      ],
+      "questions": [
+        "pipe_material",
+        "pipe_replacement"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "plumbing-small",
+      "family": "plumbing",
+      "profile": "mnc",
+      "match": "сч[её]тчик(?![а-яё]*\\s+(?:(?:на|у|в)\\s+)?(?:памперс|принтер|мфу))|фильтр|заглушк|шланг|ниппел|гибк.*подводк",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0289",
+        "DOC-L0290"
+      ],
+      "matrix_rows": [
+        171
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "drain",
+      "family": "drain",
+      "profile": "mnc",
+      "match": "засор|прочист.{0,35}(?:канализ|труб|стояк)|(?:стояк|канализационн\\w*\\s+труб)[^.!?\\n]{0,50}прочист",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0292"
+      ],
+      "matrix_rows": [
+        172
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "mnc-connect",
+      "family": "appliance",
+      "profile": "mnc",
+      "match": "(?:подключ|установ).{0,45}(?:стиральн|посудомо|сушильн|бойлер|водонагрев|электроплит|варочн)|(?:стиральн|посудомо|сушильн|бойлер|водонагрев|электроплит|варочн).{0,45}подключ",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0294",
+        "DOC-L0295",
+        "DOC-L0320",
+        "DOC-L0321"
+      ],
+      "matrix_rows": [
+        63,
+        173,
+        182
+      ],
+      "questions": [
+        "plumbing_ready",
+        "electrics_ready"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "sockets",
+      "family": "sockets",
+      "profile": "mnc",
+      "match": "розет|выключател",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0298",
+        "DOC-L0299"
+      ],
+      "matrix_rows": [
+        174
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "light-led-repair",
+      "family": "light",
+      "profile": "mnc",
+      "match": "(?:ремонт|почин).{0,40}(?:светодиодн|led).{0,20}(?:люстр|светильн)|(?:светодиодн|led).{0,20}(?:люстр|светильн).{0,40}(?:ремонт|почин)|(?:люстр|светильн)\\w*.{0,20}(?:светодиодн|диодн|led).{0,40}(?:ремонт|почин)|(?:ремонт|почин).{0,30}(?:люстр|светильн).{0,20}(?:светодиодн|диодн|led)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0305"
+      ],
+      "matrix_rows": [
+        176
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "lighting-symptom",
+      "family": "light",
+      "profile": "mnc",
+      "match": "(?:морга|мига|мерца|гасн)\\w*\\s+(?:весь\\s+)?свет\\b|\\bсвет\\s+(?:морга|мига|мерца|гасн)\\w*",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0301",
+        "DOC-L0302"
+      ],
+      "matrix_rows": [],
+      "questions": [
+        "lighting_object"
+      ],
+      "exclude": "\\bне\\s+(?:морга|мига|мерца|гасн)"
+    },
+    {
+      "id": "light",
+      "family": "light",
+      "profile": "mnc",
+      "match": "люстр|светильник|\\bбра\\b",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0301",
+        "DOC-L0302",
+        "DOC-L0303",
+        "DOC-L0304",
+        "DOC-L0306"
+      ],
+      "matrix_rows": [
+        175
+      ],
+      "questions": [
+        "ceiling",
+        "support",
+        "height"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "high-voltage",
+      "family": "electric",
+      "profile": "mnc",
+      "match": "высоковольт|трансформатор|на столб",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0310"
+      ],
+      "matrix_rows": [
+        178
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "internet-cable-mnc",
+      "family": "electric",
+      "profile": "mnc",
+      "match": "витая пара|оптоволок|интернет.?кабел",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0311"
+      ],
+      "matrix_rows": [
+        179
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "electric",
+      "family": "electric",
+      "profile": "mnc",
+      "match": "электропровод|\\bавтомат(?:ы|а|ов|ам|ами|ах)?\\b|кабел|\\bпровод(?:[аыуе]|ов|ам|ами|ах|ом|к[а-яё]*)?\\b|\\bщит(?:ок|[ауеы]|ом|ов|ам|ами|ах|к(?:а|е|у|ом|и|ов|ам|ами|ах))?\\b",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0308",
+        "DOC-L0309",
+        "DOC-L0312",
+        "DOC-L0313"
+      ],
+      "matrix_rows": [
+        177
+      ],
+      "questions": [
+        "switchboard"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "bulb-repair",
+      "family": "bulb",
+      "profile": "mnc",
+      "match": "ремонт.{0,20}ламп|ламп.{0,20}ремонт",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0317"
+      ],
+      "matrix_rows": [
+        181
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "bulb",
+      "family": "bulb",
+      "profile": "mnc",
+      "match": "лампоч|ламп",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0315",
+        "DOC-L0316",
+        "DOC-L0318"
+      ],
+      "matrix_rows": [
+        180
+      ],
+      "questions": [
+        "height"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "furniture-special",
+      "family": "furniture",
+      "profile": "mnc",
+      "match": "(?:пружин|стекл).{0,40}(?:диван|кроват|мебел|шкаф|тумб|стол)|(?:диван|кроват|мебел|шкаф|тумб|стол).{0,40}(?:пружин|стекл)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0325"
+      ],
+      "matrix_rows": [],
+      "questions": [
+        "furniture_problem"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "kitchen",
+      "family": "furniture",
+      "profile": "mnc",
+      "match": "(?:собра[а-я]*|сборк[а-я]*|установ[а-я]*)\\s+(?:(?:нов[а-я]*|углов[а-я]*|встроенн[а-я]*|готов[а-я]*|больш[а-я]*|маленьк[а-я]*)\\s+){0,3}(?:кухн(?:я|ю|и|е|ей|ь)\\b|кухонн[а-я]*\\s+(?:гарнитур|мебел))|(?:кухн(?:я|ю|и|е|ей|ь)\\b|кухонн[а-я]*\\s+(?:гарнитур[а-я]*|мебел[а-я]*))\\s+(?:(?:надо|нужно|необходимо)\\s+)?(?:собра|сборк|установ)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0328",
+        "DOC-L0330",
+        "DOC-L0331"
+      ],
+      "matrix_rows": [
+        185
+      ],
+      "questions": [
+        "instructions"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "furniture-disassembly",
+      "family": "furniture",
+      "profile": "mnc",
+      "match": "(?:разобра|разборк|демонтир|демонтаж)\\w*.{0,45}(?:шкаф|мебел|комод|кроват|диван)|(?:шкаф|мебел|комод|кроват|диван)\\w*.{0,45}(?:разобра|разборк|демонтир|демонтаж)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "matrix_rows": [],
+      "questions": [],
+      "exclude": "\\b(?:собрать|собирать|сборка|сборку|установить|починить|отремонтировать)\\b"
+    },
+    {
+      "id": "furniture",
+      "family": "furniture",
+      "profile": "mnc",
+      "match": "мебел|шкаф|комод|диван|кроват|тумб|стул|\\bстол(?:а|у|ом|е|ы|ов|ами|ах)?\\b|кресл|банкетк|стеллаж|(?:сборк\\w*|собра\\w*|ремонт\\w*|почин\\w*)\\s+прихож\\w*|прихож\\w*.{0,25}(?:собра|сборк|ремонт|почин)|(?:выкатн|выдвижн)\\w*\\s+ящик|ящик\\w*.{0,30}(?:направляющ|мебел|комод|кухн)|(?:сборк\\w*|собра\\w*|ремонт\\w*|почин\\w*).{0,25}\\bпенал\\w*|\\bпенал\\w*.{0,25}(?:сборк|собра|ремонт|почин)",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0323",
+        "DOC-L0324",
+        "DOC-L0325",
+        "DOC-L0326"
+      ],
+      "matrix_rows": [
+        183
+      ],
+      "questions": [
+        "instructions"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "floor",
+      "family": "floor",
+      "profile": "mnc",
+      "match": "линолеум|ламинат",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0334",
+        "DOC-L0335",
+        "DOC-L0336"
+      ],
+      "matrix_rows": [
+        186,
+        187
+      ],
+      "questions": [
+        "floor_ready"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "plinth",
+      "family": "plinth",
+      "profile": "mnc",
+      "match": "плинтус|порожек|потолочн.*плитк",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0338",
+        "DOC-L0339"
+      ],
+      "matrix_rows": [
+        188
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "pest",
+      "family": "pest",
+      "profile": "mnc",
+      "match": "дезинфек|таракан|клоп|муравь|травл",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0342",
+        "DOC-L0343",
+        "DOC-L0344"
+      ],
+      "matrix_rows": [
+        189,
+        254
+      ],
+      "questions": [
+        "area",
+        "pest_type"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "hanging",
+      "family": "hanging",
+      "profile": "mnc",
+      "match": "карниз|гардин|полк|зеркал|\\bкартин(?:а|у|ы|е|ой|ам|ами|ах)?\\b|крюч|штор|вешал",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0349",
+        "DOC-L0350",
+        "DOC-L0351",
+        "DOC-L0352",
+        "DOC-L0353"
+      ],
+      "matrix_rows": [
+        190
+      ],
+      "questions": [
+        "wall"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "sport-repair",
+      "family": "sport",
+      "profile": "mnc",
+      "match": "(?:ремонт|почин).{0,35}(?:турник|шведск)|(?:турник|шведск).{0,35}(?:ремонт|почин)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0357"
+      ],
+      "matrix_rows": [
+        193
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "sport",
+      "family": "sport",
+      "profile": "mnc",
+      "match": "турник|шведск|спортивн\\w*\\s+стенк",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0355",
+        "DOC-L0356",
+        "DOC-L0358"
+      ],
+      "matrix_rows": [
+        192
+      ],
+      "questions": [
+        "wall"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "drying",
+      "family": "drying",
+      "profile": "mnc",
+      "match": "сушилк.{0,15}бель|бельев.{0,15}сушилк|(?:повес|навес|закреп).{0,30}сушилк|сушилк.{0,30}(?:повес|навес|закреп)",
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0360",
+        "DOC-L0361",
+        "DOC-L0362"
+      ],
+      "matrix_rows": [
+        194,
+        195
+      ],
+      "questions": [
+        "drying_location"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "lock-open",
+      "family": "lock",
+      "profile": "mnc",
+      "match": "вскры.{0,20}(?:зам|двер)|(?:зам|двер).{0,20}вскры",
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0366"
+      ],
+      "matrix_rows": [
+        198,
+        239
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "lock-cut",
+      "family": "lock",
+      "profile": "mnc",
+      "match": "врез.{0,20}(?:зам|руч)|(?:зам|руч).{0,20}врез",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0364"
+      ],
+      "matrix_rows": [
+        197
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "lock",
+      "family": "lock",
+      "profile": "mnc",
+      "match": "замок|замк|ручк.{0,12}двер|двер.{0,12}ручк|ручк\\w*[^.!?\\n]{0,35}(?:межкомнатн|входн)|(?:межкомнатн|входн)[^.!?\\n]{0,35}ручк",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0364",
+        "DOC-L0365",
+        "DOC-L0367",
+        "DOC-L0368"
+      ],
+      "matrix_rows": [
+        196
+      ],
+      "questions": [
+        "lock_work",
+        "door_type",
+        "door_material"
+      ],
+      "exclude": ""
+    },
+    {
+      "id": "window-glass",
+      "family": "window",
+      "profile": "mnc",
+      "match": "(?:встав|замен|установ)\\w*[^.!?\\n]{0,40}(?:стекл\\w*[^.!?\\n]{0,20}окн|стеклопакет)|стекл\\w*[^.!?\\n]{0,30}(?:замен|встав|установ)\\w*[^.!?\\n]{0,20}окн",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0372",
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "matrix_rows": [],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "window-install",
+      "family": "window",
+      "profile": "mnc",
+      "match": "(?:ремонт|установ).{0,40}(?:пластиков.*окн|окн.*пвх)|(?:пластиков.*окн|окн.*пвх).{0,40}(?:ремонт|установ)",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0372"
+      ],
+      "matrix_rows": [
+        200
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "window",
+      "family": "window",
+      "profile": "mnc",
+      "match": "окн|москитн",
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0370",
+        "DOC-L0371",
+        "DOC-L0373"
+      ],
+      "matrix_rows": [
+        199
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "wall-tile",
+      "family": "wall-tile",
+      "profile": "mnc",
+      "match": "(?:фартук|стен[ауе])[^\\n.!?;]{0,50}(?:вылож|уклад|плитк)|(?:вылож|уклад)[^\\n.!?;]{0,50}(?:фартук|стен[ауе])",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453",
+        "DOC-L0463"
+      ],
+      "matrix_rows": [],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "welding",
+      "family": "any",
+      "profile": "any",
+      "match": "свароч|сварк|сварит|привар",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0461",
+        "DOC-L0462"
+      ],
+      "matrix_rows": [
+        207,
+        253
+      ],
+      "questions": [],
+      "exclude": ""
+    },
+    {
+      "id": "estimate",
+      "family": "any",
+      "profile": "any",
+      "match": "состав.{0,15}смет|смет.{0,15}состав",
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0460"
+      ],
+      "matrix_rows": [
+        206
+      ],
+      "questions": [],
+      "exclude": ""
+    }
+  ],
+  "matrix_review": [
+    {
+      "id": "MATRIX-001",
+      "title": "Стиральная машина — ремонт и настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0416",
+        "DOC-L0417",
+        "DOC-L0418",
+        "DOC-L0419"
+      ],
+      "resolution": "Применять условия карточки washer",
+      "reviewed": true,
+      "executable_rule": "washer"
+    },
+    {
+      "id": "MATRIX-002",
+      "title": "Стиральная/сушильная машина — подключение",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0413",
+        "DOC-L0420"
+      ],
+      "resolution": "Применять условия карточки washer-connect",
+      "reviewed": true,
+      "executable_rule": "washer-connect"
+    },
+    {
+      "id": "MATRIX-003",
+      "title": "Стиральная машина — замена/ремонт подшипника",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0416",
+        "DOC-L0417",
+        "DOC-L0418",
+        "DOC-L0419"
+      ],
+      "resolution": "Применять условия карточки washer",
+      "reviewed": true,
+      "executable_rule": "washer"
+    },
+    {
+      "id": "MATRIX-004",
+      "title": "Старые стиральные машины с ручным отжимом (Малютка, Рига-54, Волга-8)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0421"
+      ],
+      "resolution": "Применять условия карточки washer-old",
+      "reviewed": true,
+      "executable_rule": "washer-old"
+    },
+    {
+      "id": "MATRIX-005",
+      "title": "Промышленные стиральные машины",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0466"
+      ],
+      "resolution": "Применять условия карточки industrial",
+      "reviewed": true,
+      "executable_rule": "industrial"
+    },
+    {
+      "id": "MATRIX-006",
+      "title": "Сушильная машина (для сушки белья) — ремонт и настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0416",
+        "DOC-L0417",
+        "DOC-L0418",
+        "DOC-L0419"
+      ],
+      "resolution": "Применять условия карточки washer",
+      "reviewed": true,
+      "executable_rule": "washer"
+    },
+    {
+      "id": "MATRIX-007",
+      "title": "Холодильник/морозилка (бытовые) — ремонт и настройка",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0447",
+        "DOC-L0448",
+        "DOC-L0449",
+        "DOC-L0450"
+      ],
+      "resolution": "Применять условия карточки fridge",
+      "reviewed": true,
+      "executable_rule": "fridge"
+    },
+    {
+      "id": "MATRIX-008",
+      "title": "Торговый холод: холодильные витрины, морозильные лари, винные шкафы",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0447",
+        "DOC-L0448",
+        "DOC-L0449",
+        "DOC-L0450"
+      ],
+      "resolution": "Применять условия карточки fridge",
+      "reviewed": true,
+      "executable_rule": "fridge"
+    },
+    {
+      "id": "MATRIX-009",
+      "title": "Холодильник — заправка фреоном (хладагентом)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0447",
+        "DOC-L0448",
+        "DOC-L0449",
+        "DOC-L0450"
+      ],
+      "resolution": "Применять условия карточки fridge",
+      "reviewed": true,
+      "executable_rule": "fridge"
+    },
+    {
+      "id": "MATRIX-010",
+      "title": "Холодильник — замена/ремонт компрессора",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0447",
+        "DOC-L0448",
+        "DOC-L0449",
+        "DOC-L0450"
+      ],
+      "resolution": "Применять условия карточки fridge",
+      "reviewed": true,
+      "executable_rule": "fridge"
+    },
+    {
+      "id": "MATRIX-011",
+      "title": "Посудомоечная машина — ремонт и настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0412",
+        "DOC-L0414"
+      ],
+      "resolution": "Применять условия карточки dishwasher",
+      "reviewed": true,
+      "executable_rule": "dishwasher"
+    },
+    {
+      "id": "MATRIX-012",
+      "title": "Посудомоечная машина — подключение",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0413",
+        "DOC-L0420"
+      ],
+      "resolution": "Применять условия карточки washer-connect",
+      "reviewed": true,
+      "executable_rule": "washer-connect"
+    },
+    {
+      "id": "MATRIX-013",
+      "title": "Электроплита / духовка / духовой шкаф — ремонт и настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0397"
+      ],
+      "resolution": "Применять условия карточки oven",
+      "reviewed": true,
+      "executable_rule": "oven"
+    },
+    {
+      "id": "MATRIX-014",
+      "title": "Электроплита / варочная поверхность — подключение",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0402"
+      ],
+      "resolution": "Применять условия карточки oven-connect",
+      "reviewed": true,
+      "executable_rule": "oven-connect"
+    },
+    {
+      "id": "MATRIX-015",
+      "title": "Газовая плита / плита с газовыми элементами",
+      "previously_disputed": true,
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0389",
+        "DOC-L0401"
+      ],
+      "resolution": "Применять условия карточки gas",
+      "reviewed": true,
+      "executable_rule": "gas"
+    },
+    {
+      "id": "MATRIX-016",
+      "title": "Компактная (переносная) плита",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0398"
+      ],
+      "resolution": "Применять условия карточки oven-portable",
+      "reviewed": true,
+      "executable_rule": "oven-portable"
+    },
+    {
+      "id": "MATRIX-017",
+      "title": "Плита/духовка — замена/ремонт стекла",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0399",
+        "DOC-L0400",
+        "DOC-L0471"
+      ],
+      "resolution": "Применять условия карточки oven-door",
+      "reviewed": true,
+      "executable_rule": "oven-door"
+    },
+    {
+      "id": "MATRIX-018",
+      "title": "Плита/духовка — замена/ремонт дверей",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0399",
+        "DOC-L0400",
+        "DOC-L0471"
+      ],
+      "resolution": "Применять условия карточки oven-door",
+      "reviewed": true,
+      "executable_rule": "oven-door"
+    },
+    {
+      "id": "MATRIX-019",
+      "title": "Варочная поверхность электрическая/индукционная — ремонт и настройка",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0397"
+      ],
+      "resolution": "Применять условия карточки oven",
+      "reviewed": true,
+      "executable_rule": "oven"
+    },
+    {
+      "id": "MATRIX-020",
+      "title": "СВЧ / микроволновая печь",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "СВЧ не входит в прямой перечень",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-021",
+      "title": "Пылесос (в т.ч. робот-пылесос)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Пылесос не входит в прямой перечень",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-022",
+      "title": "Мелкая кухонная техника (мультиварка, чайник, блендер, мясорубка и пр.)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Мелкая техника вне прямого перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-023",
+      "title": "Бойлер (электрический водонагреватель) — ремонт и настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0387",
+        "DOC-L0391",
+        "DOC-L0392"
+      ],
+      "resolution": "Применять условия карточки boiler",
+      "reviewed": true,
+      "executable_rule": "boiler"
+    },
+    {
+      "id": "MATRIX-024",
+      "title": "Бойлер — установка",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0388",
+        "DOC-L0391",
+        "DOC-L0392"
+      ],
+      "resolution": "Применять условия карточки boiler-install",
+      "reviewed": true,
+      "executable_rule": "boiler-install"
+    },
+    {
+      "id": "MATRIX-025",
+      "title": "Бойлер с газовыми элементами (газовый водонагреватель/колонка)",
+      "previously_disputed": false,
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0389",
+        "DOC-L0401"
+      ],
+      "resolution": "Применять условия карточки gas",
+      "reviewed": true,
+      "executable_rule": "gas"
+    },
+    {
+      "id": "MATRIX-026",
+      "title": "Бойлер — протечка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0390"
+      ],
+      "resolution": "Применять условия карточки boiler-leak",
+      "reviewed": true,
+      "executable_rule": "boiler-leak"
+    },
+    {
+      "id": "MATRIX-027",
+      "title": "Кофемашина рожковая — ремонт и настройка",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0404",
+        "DOC-L0405",
+        "DOC-L0406"
+      ],
+      "resolution": "Применять условия карточки coffee",
+      "reviewed": true,
+      "executable_rule": "coffee"
+    },
+    {
+      "id": "MATRIX-028",
+      "title": "Кофемашина капсульная",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0404",
+        "DOC-L0405",
+        "DOC-L0406"
+      ],
+      "resolution": "Применять условия карточки coffee",
+      "reviewed": true,
+      "executable_rule": "coffee"
+    },
+    {
+      "id": "MATRIX-029",
+      "title": "Кондиционер / сплит-система (любые работы)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0408",
+        "DOC-L0410"
+      ],
+      "resolution": "Применять условия карточки aircon",
+      "reviewed": true,
+      "executable_rule": "aircon"
+    },
+    {
+      "id": "MATRIX-030",
+      "title": "Вытяжка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0394",
+        "DOC-L0395"
+      ],
+      "resolution": "Применять условия карточки hood",
+      "reviewed": true,
+      "executable_rule": "hood"
+    },
+    {
+      "id": "MATRIX-031",
+      "title": "ТВ: первичный квалификатор типа",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-032",
+      "title": "ЖК ТВ (LED/OLED/QLED) — ремонт (кроме матрицы) и любая другая проблема",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-033",
+      "title": "ТВ — замена гнёзд / любая пайка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0195",
+        "DOC-L0440"
+      ],
+      "resolution": "Обязательная озвучка 5000 за пайку",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-034",
+      "title": "ЖК ТВ — замена/ремонт матрицы, разбитая матрица/экран",
+      "previously_disputed": true,
+      "status": "matrix",
+      "primary_refs": [
+        "DOC-L0214",
+        "DOC-L0223",
+        "DOC-L0224",
+        "DOC-L0439",
+        "DOC-L0445",
+        "DOC-L0446",
+        "TG1-566"
+      ],
+      "resolution": "Подтверждённая матрица: отказ/согласование по указанию пользователя, без обещания ремонта",
+      "reviewed": true,
+      "executable_rule": "tv-matrix"
+    },
+    {
+      "id": "MATRIX-035",
+      "title": "ТВ — полосы на экране (вертикальные/горизонтальные)",
+      "previously_disputed": false,
+      "status": "matrix",
+      "primary_refs": [
+        "DOC-L0214",
+        "DOC-L0223",
+        "DOC-L0224",
+        "DOC-L0439",
+        "DOC-L0445",
+        "DOC-L0446",
+        "TG1-566"
+      ],
+      "resolution": "Подтверждённая матрица: отказ/согласование по указанию пользователя, без обещания ремонта",
+      "reviewed": true,
+      "executable_rule": "tv-matrix"
+    },
+    {
+      "id": "MATRIX-036",
+      "title": "ТВ — проблема с экраном/изображением после физического повреждения или влаги",
+      "previously_disputed": false,
+      "status": "matrix",
+      "primary_refs": [
+        "DOC-L0214",
+        "DOC-L0223",
+        "DOC-L0224",
+        "DOC-L0439",
+        "DOC-L0445",
+        "DOC-L0446",
+        "TG1-566"
+      ],
+      "resolution": "Подтверждённая матрица: отказ/согласование по указанию пользователя, без обещания ремонта",
+      "reviewed": true,
+      "executable_rule": "tv-matrix"
+    },
+    {
+      "id": "MATRIX-037",
+      "title": "ЖК ТВ — проблема с изображением БЕЗ подтверждения матрицы",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-038",
+      "title": "ТВ — любая настройка (изображение, приложения, интернет, прошивка, аккаунты, ошибки), подключение/настройка приставок и ресиверов",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-039",
+      "title": "ТВ — настройка каналов",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0202",
+        "DOC-L0203",
+        "DOC-L0204",
+        "DOC-L0205"
+      ],
+      "resolution": "Применять условия карточки tv-channels",
+      "reviewed": true,
+      "executable_rule": "tv-channels"
+    },
+    {
+      "id": "MATRIX-040",
+      "title": "Комнатные антенны — настройка и установка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-041",
+      "title": "Наружные антенны (НЕ спутниковые) — подключение/настройка/установка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433"
+      ],
+      "resolution": "Применять условия карточки tv-outdoor",
+      "reviewed": true,
+      "executable_rule": "tv-outdoor"
+    },
+    {
+      "id": "MATRIX-042",
+      "title": "Спутниковые антенны / спутниковое ТВ",
+      "previously_disputed": true,
+      "status": "conflict",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433",
+        "TG1-612"
+      ],
+      "resolution": "Общий документ и объявление расходятся; передать оператору",
+      "reviewed": true,
+      "executable_rule": "tv-satellite"
+    },
+    {
+      "id": "MATRIX-043",
+      "title": "Домашний кинотеатр — подключение и настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-044",
+      "title": "ТВ-приставки и домашние кинотеатры — ремонт и прошивка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0210",
+        "DOC-L0435"
+      ],
+      "resolution": "Применять условия карточки tv-box-repair",
+      "reviewed": true,
+      "executable_rule": "tv-box-repair"
+    },
+    {
+      "id": "MATRIX-045",
+      "title": "Пульт ТВ — подключение и настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-046",
+      "title": "VPN на ТВ — установка/настройка/подключение",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-047",
+      "title": "Кинескопные, проекционные, плазменные ТВ — ремонт",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-048",
+      "title": "Крепление ТВ к стене на кронштейн",
+      "previously_disputed": false,
+      "status": "conditional_mount",
+      "primary_refs": [
+        "DOC-L0209",
+        "DOC-L0350"
+      ],
+      "resolution": "Применять условия карточки tv-mount",
+      "reviewed": true,
+      "executable_rule": "tv-mount"
+    },
+    {
+      "id": "MATRIX-049",
+      "title": "ТВ — поляризационная плёнка; ножки/подставки (установка/замена/ремонт)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0211",
+        "DOC-L0436"
+      ],
+      "resolution": "Применять условия карточки tv-film",
+      "reviewed": true,
+      "executable_rule": "tv-film"
+    },
+    {
+      "id": "MATRIX-050",
+      "title": "ТВ — тип неизвестен (клиент не назвал тип и модель)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-051",
+      "title": "ТВ — территория приёма",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0220",
+        "DOC-L0221"
+      ],
+      "resolution": "ТВ: фактическая территория",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-052",
+      "title": "Диагностика техники БТ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0472"
+      ],
+      "resolution": "Диагностика поддерживаемой техники",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-053",
+      "title": "Замена запчасти/комплектующей (уплотнительная резинка, манжета, дверца, модуль/дисплей управления)",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0471"
+      ],
+      "resolution": "Без обещания наличия детали; частное правило дверей плиты имеет приоритет",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-054",
+      "title": "Восстановление внешнего вида техники (вмятины, полировка царапин, отбеливание пластика, покраска, ржавчина)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0325",
+        "DOC-L0470"
+      ],
+      "resolution": "Применять условия карточки appearance",
+      "reviewed": true,
+      "executable_rule": "appearance"
+    },
+    {
+      "id": "MATRIX-055",
+      "title": "Замена/ремонт корпуса (любая техника)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0467",
+        "DOC-L0468"
+      ],
+      "resolution": "Применять условия карточки body-handles",
+      "reviewed": true,
+      "executable_rule": "body-handles"
+    },
+    {
+      "id": "MATRIX-056",
+      "title": "Замена/ремонт ручек и ножек (любая техника)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0467",
+        "DOC-L0468"
+      ],
+      "resolution": "Применять условия карточки body-handles",
+      "reviewed": true,
+      "executable_rule": "body-handles"
+    },
+    {
+      "id": "MATRIX-057",
+      "title": "Промышленная техника (любая)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0466"
+      ],
+      "resolution": "Применять условия карточки industrial",
+      "reviewed": true,
+      "executable_rule": "industrial"
+    },
+    {
+      "id": "MATRIX-058",
+      "title": "Прочая техника / непрофильные работы (всё вне перечня БТ)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня: согласование",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-059",
+      "title": "(общее) Марка и модель техники — обязательный квалификатор",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0465"
+      ],
+      "resolution": "Марка и модель обязательны",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-060",
+      "title": "(общее) Правила озвучки цен БТ",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0469",
+        "DOC-L0743",
+        "DOC-L0774",
+        "DOC-L0777"
+      ],
+      "resolution": "Цена по этапу и услуге",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-061",
+      "title": "НЕ БТ: компьютерная техника (ПК/ноутбуки/моноблоки, мониторы/видеокарты, роутеры, принтеры, телефоны/планшеты, игровые приставки, восстановление данных)",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0702",
+        "DOC-L0704",
+        "DOC-L0705",
+        "DOC-L0706"
+      ],
+      "resolution": "Передача КП после проверки филиала",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-062",
+      "title": "НЕ БТ: сантехника, электрика, мебель, мелкий ремонт (смесители, розетки, люстры, сборка мебели, замки, окна и пр.)",
+      "previously_disputed": false,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L1307",
+        "DOC-L1308"
+      ],
+      "resolution": "Передача в профильное направление",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-063",
+      "title": "Смежная зона: подключение БТ к коммуникациям",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0294",
+        "DOC-L0295",
+        "DOC-L0320",
+        "DOC-L0321"
+      ],
+      "resolution": "Применять условия карточки mnc-connect",
+      "reviewed": true,
+      "executable_rule": "mnc-connect"
+    },
+    {
+      "id": "MATRIX-064",
+      "title": "Газовое оборудование любое (плиты, бойлеры/колонки с газовыми элементами)",
+      "previously_disputed": false,
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0389",
+        "DOC-L0401"
+      ],
+      "resolution": "Применять условия карточки gas",
+      "reviewed": true,
+      "executable_rule": "gas"
+    },
+    {
+      "id": "MATRIX-065",
+      "title": "Восстановление данных — общий вход (квалификатор)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "resolution": "Применять условия карточки data",
+      "reviewed": true,
+      "executable_rule": "data"
+    },
+    {
+      "id": "MATRIX-066",
+      "title": "Восстановление данных с исправных носителей (HDD, флешка, SD-карта, внешний HDD)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "resolution": "Применять условия карточки data",
+      "reviewed": true,
+      "executable_rule": "data"
+    },
+    {
+      "id": "MATRIX-067",
+      "title": "Восстановление данных с ПК/ноутбука/моноблока",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "resolution": "Применять условия карточки data",
+      "reviewed": true,
+      "executable_rule": "data"
+    },
+    {
+      "id": "MATRIX-068",
+      "title": "Восстановление данных с исправного телефона/планшета",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "resolution": "Применять условия карточки data",
+      "reviewed": true,
+      "executable_rule": "data"
+    },
+    {
+      "id": "MATRIX-069",
+      "title": "Восстановление данных с повреждённых/сгоревших носителей (HDD, SSD, флешки, карты памяти, внешние диски)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "resolution": "Применять условия карточки data",
+      "reviewed": true,
+      "executable_rule": "data"
+    },
+    {
+      "id": "MATRIX-070",
+      "title": "Восстановление данных с неисправных телефонов/планшетов (повреждён, не включается, не загружается, заблокирован, нет изображения)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "resolution": "Применять условия карточки data",
+      "reviewed": true,
+      "executable_rule": "data"
+    },
+    {
+      "id": "MATRIX-071",
+      "title": "Восстановление данных из iCloud / WhatsApp / Telegram",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0110",
+        "DOC-L0111",
+        "DOC-L0112",
+        "DOC-L0114",
+        "DOC-L0115",
+        "DOC-L0116",
+        "DOC-L0118",
+        "DOC-L0119",
+        "DOC-L0120"
+      ],
+      "resolution": "Применять условия карточки data",
+      "reviewed": true,
+      "executable_rule": "data"
+    },
+    {
+      "id": "MATRIX-072",
+      "title": "ПК/моноблок/ноутбук — любая техническая проблема (ремонт, чистка)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0124",
+        "DOC-L0125",
+        "DOC-L0132",
+        "DOC-L0134",
+        "DOC-L0135"
+      ],
+      "resolution": "Применять условия карточки pc",
+      "reviewed": true,
+      "executable_rule": "pc"
+    },
+    {
+      "id": "MATRIX-073",
+      "title": "ПК — любая настройка, установка программ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0124",
+        "DOC-L0125",
+        "DOC-L0132",
+        "DOC-L0134",
+        "DOC-L0135"
+      ],
+      "resolution": "Применять условия карточки pc",
+      "reviewed": true,
+      "executable_rule": "pc"
+    },
+    {
+      "id": "MATRIX-074",
+      "title": "Узкопрофильные программы (AutoCAD, 3ds Max, Photoshop, Premiere, Компас, 1С, Битрикс24, CRM и подобные) — установка",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0126",
+        "DOC-L0137",
+        "DOC-L0138"
+      ],
+      "resolution": "Применять условия карточки pc-special-software",
+      "reviewed": true,
+      "executable_rule": "pc-special-software"
+    },
+    {
+      "id": "MATRIX-075",
+      "title": "Узкопрофильные программы — настройка и обучение работе",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0126",
+        "DOC-L0137",
+        "DOC-L0138"
+      ],
+      "resolution": "Применять условия карточки pc-special-software",
+      "reviewed": true,
+      "executable_rule": "pc-special-software"
+    },
+    {
+      "id": "MATRIX-076",
+      "title": "Ремонт отдельных комплектующих ПК/моноблока/ноутбука",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0124",
+        "DOC-L0125",
+        "DOC-L0132",
+        "DOC-L0134",
+        "DOC-L0135"
+      ],
+      "resolution": "Применять условия карточки pc",
+      "reviewed": true,
+      "executable_rule": "pc"
+    },
+    {
+      "id": "MATRIX-077",
+      "title": "Периферия к ПК (наушники, клавиатуры, рули, колонки, аудиосистемы) — подключение/настройка",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0128",
+        "DOC-L0129",
+        "DOC-L0131"
+      ],
+      "resolution": "Применять условия карточки pc-peripheral",
+      "reviewed": true,
+      "executable_rule": "pc-peripheral"
+    },
+    {
+      "id": "MATRIX-078",
+      "title": "Ремонт клавиатуры, мыши, руля",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0128",
+        "DOC-L0129",
+        "DOC-L0131"
+      ],
+      "resolution": "Применять условия карточки pc-peripheral",
+      "reviewed": true,
+      "executable_rule": "pc-peripheral"
+    },
+    {
+      "id": "MATRIX-079",
+      "title": "Сборка ПК",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0130"
+      ],
+      "resolution": "Применять условия карточки pc-assembly",
+      "reviewed": true,
+      "executable_rule": "pc-assembly"
+    },
+    {
+      "id": "MATRIX-080",
+      "title": "VR-очки — ПО для связи с ПК, подключение к ПК (кроме Oculus/Meta Quest)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0128",
+        "DOC-L0129",
+        "DOC-L0131"
+      ],
+      "resolution": "Применять условия карточки pc-peripheral",
+      "reviewed": true,
+      "executable_rule": "pc-peripheral"
+    },
+    {
+      "id": "MATRIX-081",
+      "title": "VR Oculus Quest / Meta Quest (любая серия) — любая проблема (подключение/настройка/прошивка)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0145"
+      ],
+      "resolution": "Применять условия карточки pc-quest",
+      "reviewed": true,
+      "executable_rule": "pc-quest"
+    },
+    {
+      "id": "MATRIX-082",
+      "title": "Обучение работе на ПК (включение, программы, браузер, скачивание игр)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0124",
+        "DOC-L0125",
+        "DOC-L0132",
+        "DOC-L0134",
+        "DOC-L0135"
+      ],
+      "resolution": "Применять условия карточки pc",
+      "reviewed": true,
+      "executable_rule": "pc"
+    },
+    {
+      "id": "MATRIX-083",
+      "title": "iCloud на макбуке — разблокировка/восстановление доступа",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0133",
+        "DOC-L0146"
+      ],
+      "resolution": "Применять условия карточки pc-icloud",
+      "reviewed": true,
+      "executable_rule": "pc-icloud"
+    },
+    {
+      "id": "MATRIX-084",
+      "title": "VPN на ПК — установка/настройка/подключение",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0124",
+        "DOC-L0125",
+        "DOC-L0132",
+        "DOC-L0134",
+        "DOC-L0135"
+      ],
+      "resolution": "Применять условия карточки pc",
+      "reviewed": true,
+      "executable_rule": "pc"
+    },
+    {
+      "id": "MATRIX-085",
+      "title": "Локальная сеть между ПК/ноутбуками/устройствами",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0124",
+        "DOC-L0125",
+        "DOC-L0132",
+        "DOC-L0134",
+        "DOC-L0135"
+      ],
+      "resolution": "Применять условия карточки pc",
+      "reviewed": true,
+      "executable_rule": "pc"
+    },
+    {
+      "id": "MATRIX-086",
+      "title": "Создание сайтов, презентаций, текстовых документов; монтаж видео; обработка фото",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0139",
+        "DOC-L0142"
+      ],
+      "resolution": "Применять условия карточки pc-creation",
+      "reviewed": true,
+      "executable_rule": "pc-creation"
+    },
+    {
+      "id": "MATRIX-087",
+      "title": "Калибровка экрана ноутбука",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "resolution": "Применять условия карточки pc-display-special",
+      "reviewed": true,
+      "executable_rule": "pc-display-special"
+    },
+    {
+      "id": "MATRIX-088",
+      "title": "Серверы — любое серверное оборудование, ПК в роли сервера",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0141"
+      ],
+      "resolution": "Применять условия карточки pc-server",
+      "reviewed": true,
+      "executable_rule": "pc-server"
+    },
+    {
+      "id": "MATRIX-089",
+      "title": "Установка пиратского ПО",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0139",
+        "DOC-L0142"
+      ],
+      "resolution": "Применять условия карточки pc-creation",
+      "reviewed": true,
+      "executable_rule": "pc-creation"
+    },
+    {
+      "id": "MATRIX-090",
+      "title": "Поляризационная плёнка на экран ноутбука — замена/наклейка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "resolution": "Применять условия карточки pc-display-special",
+      "reviewed": true,
+      "executable_rule": "pc-display-special"
+    },
+    {
+      "id": "MATRIX-091",
+      "title": "Царапины на экране ноутбука/моноблока — устранение",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "resolution": "Применять условия карточки pc-display-special",
+      "reviewed": true,
+      "executable_rule": "pc-display-special"
+    },
+    {
+      "id": "MATRIX-092",
+      "title": "Гравировка клавиатур (на ноутбуке и отдельно)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "resolution": "Применять условия карточки pc-display-special",
+      "reviewed": true,
+      "executable_rule": "pc-display-special"
+    },
+    {
+      "id": "MATRIX-093",
+      "title": "Монитор — технический ремонт (кроме матрицы)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0150",
+        "DOC-L0151"
+      ],
+      "resolution": "Применять условия карточки monitor",
+      "reviewed": true,
+      "executable_rule": "monitor"
+    },
+    {
+      "id": "MATRIX-094",
+      "title": "Монитор — настройка/подключение",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0150",
+        "DOC-L0151"
+      ],
+      "resolution": "Применять условия карточки monitor",
+      "reviewed": true,
+      "executable_rule": "monitor"
+    },
+    {
+      "id": "MATRIX-095",
+      "title": "Видеокарта — ремонт",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0152",
+        "DOC-L0153"
+      ],
+      "resolution": "Применять условия карточки gpu",
+      "reviewed": true,
+      "executable_rule": "gpu"
+    },
+    {
+      "id": "MATRIX-096",
+      "title": "Видеокарта — обслуживание (чистка, замена термопасты, термопрокладок)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0152",
+        "DOC-L0153"
+      ],
+      "resolution": "Применять условия карточки gpu",
+      "reviewed": true,
+      "executable_rule": "gpu"
+    },
+    {
+      "id": "MATRIX-097",
+      "title": "Монитор — калибровка изображения",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "resolution": "Применять условия карточки pc-display-special",
+      "reviewed": true,
+      "executable_rule": "pc-display-special"
+    },
+    {
+      "id": "MATRIX-098",
+      "title": "Монитор — ремонт/замена матрицы",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0156"
+      ],
+      "resolution": "Применять условия карточки monitor-matrix",
+      "reviewed": true,
+      "executable_rule": "monitor-matrix"
+    },
+    {
+      "id": "MATRIX-099",
+      "title": "Монитор — поляризационная плёнка (замена/наклейка)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "resolution": "Применять условия карточки pc-display-special",
+      "reviewed": true,
+      "executable_rule": "pc-display-special"
+    },
+    {
+      "id": "MATRIX-100",
+      "title": "Монитор — устранение царапин на экране",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0140",
+        "DOC-L0143",
+        "DOC-L0144",
+        "DOC-L0147"
+      ],
+      "resolution": "Применять условия карточки pc-display-special",
+      "reviewed": true,
+      "executable_rule": "pc-display-special"
+    },
+    {
+      "id": "MATRIX-101",
+      "title": "Обжим витой пары/патч-корда, установка коннектора",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0162",
+        "DOC-L0163"
+      ],
+      "resolution": "Применять условия карточки cable-crimp",
+      "reviewed": true,
+      "executable_rule": "cable-crimp"
+    },
+    {
+      "id": "MATRIX-102",
+      "title": "Оптоволоконный кабель — обжим/установка коннектора",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0165",
+        "DOC-L0166"
+      ],
+      "resolution": "Применять условия карточки cable-fibre",
+      "reviewed": true,
+      "executable_rule": "cable-fibre"
+    },
+    {
+      "id": "MATRIX-103",
+      "title": "Прокладка, покупка, наращивание любого интернет-кабеля",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0165",
+        "DOC-L0166"
+      ],
+      "resolution": "Применять условия карточки cable-fibre",
+      "reviewed": true,
+      "executable_rule": "cable-fibre"
+    },
+    {
+      "id": "MATRIX-104",
+      "title": "Роутер — настройка/подключение",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0170",
+        "DOC-L0171",
+        "DOC-L0175"
+      ],
+      "resolution": "Применять условия карточки router",
+      "reviewed": true,
+      "executable_rule": "router"
+    },
+    {
+      "id": "MATRIX-105",
+      "title": "VPN на роутере — настройка",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0170",
+        "DOC-L0171",
+        "DOC-L0175"
+      ],
+      "resolution": "Применять условия карточки router",
+      "reviewed": true,
+      "executable_rule": "router"
+    },
+    {
+      "id": "MATRIX-106",
+      "title": "Репитер / расширитель wi-fi — настройка/подключение",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0172"
+      ],
+      "resolution": "Применять условия карточки repeater",
+      "reviewed": true,
+      "executable_rule": "repeater"
+    },
+    {
+      "id": "MATRIX-107",
+      "title": "Роутер — ремонт и прошивка",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0174"
+      ],
+      "resolution": "Применять условия карточки router-repair",
+      "reviewed": true,
+      "executable_rule": "router-repair"
+    },
+    {
+      "id": "MATRIX-108",
+      "title": "Симочный роутер — настройка/ремонт",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0176",
+        "DOC-L0177",
+        "DOC-L0178"
+      ],
+      "resolution": "Применять условия карточки router-modem",
+      "reviewed": true,
+      "executable_rule": "router-modem"
+    },
+    {
+      "id": "MATRIX-109",
+      "title": "Модем — настройка/ремонт; модем в связке с роутером",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0176",
+        "DOC-L0177",
+        "DOC-L0178"
+      ],
+      "resolution": "Применять условия карточки router-modem",
+      "reviewed": true,
+      "executable_rule": "router-modem"
+    },
+    {
+      "id": "MATRIX-110",
+      "title": "Лазерные и струйные принтеры, сканеры документов, копиры, МФУ (А3/А4) — ремонт, настройка, прошивка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0181",
+        "DOC-L0189"
+      ],
+      "resolution": "Применять условия карточки printer",
+      "reviewed": true,
+      "executable_rule": "printer"
+    },
+    {
+      "id": "MATRIX-111",
+      "title": "Экзотические принтеры (фотонные, термо-, 3D, пищевые, матричные, светодиодные, сублимационные, широкоформатные, фото-, маркировочные, УФ)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0182",
+        "DOC-L0184",
+        "DOC-L0185",
+        "DOC-L0187",
+        "DOC-L0188"
+      ],
+      "resolution": "Применять условия карточки printer-special",
+      "reviewed": true,
+      "executable_rule": "printer-special"
+    },
+    {
+      "id": "MATRIX-112",
+      "title": "СНПЧ — установка и настройка",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0182",
+        "DOC-L0184",
+        "DOC-L0185",
+        "DOC-L0187",
+        "DOC-L0188"
+      ],
+      "resolution": "Применять условия карточки printer-special",
+      "reviewed": true,
+      "executable_rule": "printer-special"
+    },
+    {
+      "id": "MATRIX-113",
+      "title": "Картриджи — заправка, ремонт, замена, прошивка; замена тонера",
+      "previously_disputed": true,
+      "status": "conflict",
+      "primary_refs": [
+        "DOC-L0186",
+        "TG1-589"
+      ],
+      "resolution": "Текущий документ разрешает согласование, объявление запрещает; передать оператору",
+      "reviewed": true,
+      "executable_rule": "printer-cartridge"
+    },
+    {
+      "id": "MATRIX-114",
+      "title": "Переделка принтера из одного типа в другой; ремонт/настройка переделанного принтера",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0182",
+        "DOC-L0184",
+        "DOC-L0185",
+        "DOC-L0187",
+        "DOC-L0188"
+      ],
+      "resolution": "Применять условия карточки printer-special",
+      "reviewed": true,
+      "executable_rule": "printer-special"
+    },
+    {
+      "id": "MATRIX-115",
+      "title": "ТВ — общий вход: определить тип (сквозная тема)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-116",
+      "title": "ЖК ТВ (LED/OLED/QLED) — ремонт (кроме матрицы)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-117",
+      "title": "ЖК ТВ — замена гнёзд, любая пайка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0195",
+        "DOC-L0215"
+      ],
+      "resolution": "Обязательная озвучка пайки",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-118",
+      "title": "ТВ — матрица: замена/ремонт, разбитый экран, полосы на экране",
+      "previously_disputed": true,
+      "status": "matrix",
+      "primary_refs": [
+        "DOC-L0214",
+        "DOC-L0223",
+        "DOC-L0224",
+        "DOC-L0439",
+        "DOC-L0445",
+        "DOC-L0446",
+        "TG1-566"
+      ],
+      "resolution": "Подтверждённая матрица: отказ/согласование по указанию пользователя, без обещания ремонта",
+      "reviewed": true,
+      "executable_rule": "tv-matrix"
+    },
+    {
+      "id": "MATRIX-119",
+      "title": "ЖК ТВ — проблема с изображением БЕЗ подтверждения матрицы",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-120",
+      "title": "ТВ любого типа — любая настройка (изображение, приложения, интернет, прошивка, аккаунты, ошибки); подключение и настройка приставок и ресиверов",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-121",
+      "title": "ТВ — настройка каналов",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0202",
+        "DOC-L0203",
+        "DOC-L0204",
+        "DOC-L0205"
+      ],
+      "resolution": "Применять условия карточки tv-channels",
+      "reviewed": true,
+      "executable_rule": "tv-channels"
+    },
+    {
+      "id": "MATRIX-122",
+      "title": "Комнатные антенны — настройка и установка (любой тип ТВ)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-123",
+      "title": "Наружные антенны (не спутниковые) — подключение/настройка/установка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433"
+      ],
+      "resolution": "Применять условия карточки tv-outdoor",
+      "reviewed": true,
+      "executable_rule": "tv-outdoor"
+    },
+    {
+      "id": "MATRIX-124",
+      "title": "Спутниковое ТВ / спутниковые антенны",
+      "previously_disputed": false,
+      "status": "conflict",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433",
+        "TG1-612"
+      ],
+      "resolution": "Общий документ и объявление расходятся; передать оператору",
+      "reviewed": true,
+      "executable_rule": "tv-satellite"
+    },
+    {
+      "id": "MATRIX-125",
+      "title": "Домашний кинотеатр — подключение и настройка к любому типу ТВ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-126",
+      "title": "ТВ-приставки и домашние кинотеатры — ремонт и прошивка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0210",
+        "DOC-L0435"
+      ],
+      "resolution": "Применять условия карточки tv-box-repair",
+      "reviewed": true,
+      "executable_rule": "tv-box-repair"
+    },
+    {
+      "id": "MATRIX-127",
+      "title": "Пульт к ТВ — подключение и настройка (любой тип ТВ)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-128",
+      "title": "VPN на ТВ — установка/настройка/подключение",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-129",
+      "title": "Кинескопные, проекционные, плазменные ТВ — ремонт",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-130",
+      "title": "Крепление ТВ к стене на кронштейн",
+      "previously_disputed": true,
+      "status": "conditional_mount",
+      "primary_refs": [
+        "DOC-L0209",
+        "DOC-L0350"
+      ],
+      "resolution": "Применять условия карточки tv-mount",
+      "reviewed": true,
+      "executable_rule": "tv-mount"
+    },
+    {
+      "id": "MATRIX-131",
+      "title": "ТВ — поляризационная плёнка; установка/замена/ремонт ножек и подставок",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0211",
+        "DOC-L0436"
+      ],
+      "resolution": "Применять условия карточки tv-film",
+      "reviewed": true,
+      "executable_rule": "tv-film"
+    },
+    {
+      "id": "MATRIX-132",
+      "title": "ТВ неизвестного типа (клиент не назвал ни тип, ни модель)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-133",
+      "title": "ТВ за пределами основного филиала / города-спутника",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0220",
+        "DOC-L0221"
+      ],
+      "resolution": "ТВ вне филиала/спутника",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-134",
+      "title": "Телефон/планшет — настройка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0227",
+        "DOC-L0228",
+        "DOC-L0229",
+        "DOC-L0231",
+        "DOC-L0232"
+      ],
+      "resolution": "Применять условия карточки phone",
+      "reviewed": true,
+      "executable_rule": "phone"
+    },
+    {
+      "id": "MATRIX-135",
+      "title": "Телефон/планшет — установка программ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0227",
+        "DOC-L0228",
+        "DOC-L0229",
+        "DOC-L0231",
+        "DOC-L0232"
+      ],
+      "resolution": "Применять условия карточки phone",
+      "reviewed": true,
+      "executable_rule": "phone"
+    },
+    {
+      "id": "MATRIX-136",
+      "title": "Телефон/планшет — обучение пользованию",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0227",
+        "DOC-L0228",
+        "DOC-L0229",
+        "DOC-L0231",
+        "DOC-L0232"
+      ],
+      "resolution": "Применять условия карточки phone",
+      "reviewed": true,
+      "executable_rule": "phone"
+    },
+    {
+      "id": "MATRIX-137",
+      "title": "iCloud / Google-аккаунт на телефоне/планшете — восстановление доступа",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0230",
+        "DOC-L0238"
+      ],
+      "resolution": "Применять условия карточки phone-access",
+      "reviewed": true,
+      "executable_rule": "phone-access"
+    },
+    {
+      "id": "MATRIX-138",
+      "title": "Периферия к телефону/планшету (наушники, геймпады, смарт-часы, колонки, робот-пылесосы) — подключение",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0227",
+        "DOC-L0228",
+        "DOC-L0229",
+        "DOC-L0231",
+        "DOC-L0232"
+      ],
+      "resolution": "Применять условия карточки phone",
+      "reviewed": true,
+      "executable_rule": "phone"
+    },
+    {
+      "id": "MATRIX-139",
+      "title": "VPN на телефоне/планшете — установка/настройка/подключение",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0227",
+        "DOC-L0228",
+        "DOC-L0229",
+        "DOC-L0231",
+        "DOC-L0232"
+      ],
+      "resolution": "Применять условия карточки phone",
+      "reviewed": true,
+      "executable_rule": "phone"
+    },
+    {
+      "id": "MATRIX-140",
+      "title": "Смартфон — ремонт",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0234",
+        "DOC-L0235",
+        "DOC-L0236"
+      ],
+      "resolution": "Применять условия карточки phone-repair",
+      "reviewed": true,
+      "executable_rule": "phone-repair"
+    },
+    {
+      "id": "MATRIX-141",
+      "title": "Смартфон — разблокировка/прошивка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0234",
+        "DOC-L0235",
+        "DOC-L0236"
+      ],
+      "resolution": "Применять условия карточки phone-repair",
+      "reviewed": true,
+      "executable_rule": "phone-repair"
+    },
+    {
+      "id": "MATRIX-142",
+      "title": "Планшет — ремонт, разблокировка, прошивка",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0234",
+        "DOC-L0235",
+        "DOC-L0236"
+      ],
+      "resolution": "Применять условия карточки phone-repair",
+      "reviewed": true,
+      "executable_rule": "phone-repair"
+    },
+    {
+      "id": "MATRIX-143",
+      "title": "Сторонние приложения банков на iPhone/iPad — установка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0237",
+        "DOC-L0239",
+        "DOC-L0240"
+      ],
+      "resolution": "Применять условия карточки phone-bank-film",
+      "reviewed": true,
+      "executable_rule": "phone-bank-film"
+    },
+    {
+      "id": "MATRIX-144",
+      "title": "Защитные стёкла/плёнки на экран смартфона/планшета — наклейка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0237",
+        "DOC-L0239",
+        "DOC-L0240"
+      ],
+      "resolution": "Применять условия карточки phone-bank-film",
+      "reviewed": true,
+      "executable_rule": "phone-bank-film"
+    },
+    {
+      "id": "MATRIX-145",
+      "title": "Стационарные/кнопочные телефоны — ремонт/настройка",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0237",
+        "DOC-L0239",
+        "DOC-L0240"
+      ],
+      "resolution": "Применять условия карточки phone-bank-film",
+      "reviewed": true,
+      "executable_rule": "phone-bank-film"
+    },
+    {
+      "id": "MATRIX-146",
+      "title": "PS / Nintendo Switch / Steam Deck — чистка и настройка",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0243",
+        "DOC-L0244"
+      ],
+      "resolution": "Применять условия карточки console",
+      "reviewed": true,
+      "executable_rule": "console"
+    },
+    {
+      "id": "MATRIX-147",
+      "title": "Xbox — чистка",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0243",
+        "DOC-L0244"
+      ],
+      "resolution": "Применять условия карточки console",
+      "reviewed": true,
+      "executable_rule": "console"
+    },
+    {
+      "id": "MATRIX-148",
+      "title": "Xbox — настройка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0246"
+      ],
+      "resolution": "Применять условия карточки console-repair",
+      "reviewed": true,
+      "executable_rule": "console-repair"
+    },
+    {
+      "id": "MATRIX-149",
+      "title": "PS / Nintendo Switch / Steam Deck / Xbox — прошивка и ремонт",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0246"
+      ],
+      "resolution": "Применять условия карточки console-repair",
+      "reviewed": true,
+      "executable_rule": "console-repair"
+    },
+    {
+      "id": "MATRIX-150",
+      "title": "Иные игровые приставки (не PS/Switch/Steam Deck/Xbox) — ремонт/настройка/чистка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0250",
+        "DOC-L0251"
+      ],
+      "resolution": "Иные консоли вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-151",
+      "title": "Тип техники «Прочая» — любая техника/непрофильные работы вне перечня КП",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0250",
+        "DOC-L0251"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-152",
+      "title": "Диагностика техники из перечня КП",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0257"
+      ],
+      "resolution": "Диагностика поддерживаемой техники",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-153",
+      "title": "Заказчик — юридическое лицо",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0800",
+        "DOC-L0801",
+        "DOC-L0802",
+        "DOC-L0804"
+      ],
+      "resolution": "Нужно выяснить способ оплаты",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-154",
+      "title": "Клиент с ограниченными деньгами (КП: порог 500 руб.)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0786",
+        "DOC-L0787",
+        "DOC-L0789",
+        "DOC-L0790"
+      ],
+      "resolution": "Не обещать выполнение в пределах неизвестного бюджета",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-155",
+      "title": "НЕ ПРОФИЛЬ КП: бытовая техника (стиральные/посудомоечные/сушильные машины, холодильники, бойлеры, плиты/духовки, кофемашины, кондиционеры, вытяжки и пр.)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0252",
+        "DOC-L0253"
+      ],
+      "resolution": "КП сначала согласует со своим филиалом",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-156",
+      "title": "НЕ ПРОФИЛЬ КП: сантехника, электрика, мебель, мелкий бытовой ремонт, окна, замки, дезинфекция",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0252",
+        "DOC-L0253"
+      ],
+      "resolution": "КП сначала согласует со своим филиалом",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-157",
+      "title": "НЕ ПРОФИЛЬ КП: нет филиала нужного направления в городе клиента",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0253",
+        "DOC-L0705"
+      ],
+      "resolution": "Нет другого филиала — оператор проверяет маршрут",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-158",
+      "title": "ТВ — сквозная тема: правило направления",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0377"
+      ],
+      "resolution": "ТВ по направлению объявления",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-159",
+      "title": "Смесители/сифоны — любой вид работ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0262",
+        "DOC-L0263",
+        "DOC-L0264"
+      ],
+      "resolution": "Применять условия карточки plumbing-tap",
+      "reviewed": true,
+      "executable_rule": "plumbing-tap"
+    },
+    {
+      "id": "MATRIX-160",
+      "title": "Полотенцесушители — любой вид работ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0266",
+        "DOC-L0267",
+        "DOC-L0268"
+      ],
+      "resolution": "Применять условия карточки towel",
+      "reviewed": true,
+      "executable_rule": "towel"
+    },
+    {
+      "id": "MATRIX-161",
+      "title": "Раковины/мойки — установка/замена, герметизация и прочее",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0270",
+        "DOC-L0272"
+      ],
+      "resolution": "Применять условия карточки sink",
+      "reviewed": true,
+      "executable_rule": "sink"
+    },
+    {
+      "id": "MATRIX-162",
+      "title": "Врезка технического отверстия в самой раковине",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0271",
+        "DOC-L0329"
+      ],
+      "resolution": "Применять условия карточки sink-hole",
+      "reviewed": true,
+      "executable_rule": "sink-hole"
+    },
+    {
+      "id": "MATRIX-163",
+      "title": "Ванны/душевые — любой вид работ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0274",
+        "DOC-L0275",
+        "DOC-L0276"
+      ],
+      "resolution": "Применять условия карточки bath",
+      "reviewed": true,
+      "executable_rule": "bath"
+    },
+    {
+      "id": "MATRIX-164",
+      "title": "Реставрация ванны",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0325",
+        "DOC-L0470"
+      ],
+      "resolution": "Применять условия карточки appearance",
+      "reviewed": true,
+      "executable_rule": "appearance"
+    },
+    {
+      "id": "MATRIX-165",
+      "title": "Унитазы/биде/писсуары — любой вид работ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0278",
+        "DOC-L0279",
+        "DOC-L0280"
+      ],
+      "resolution": "Применять условия карточки toilet",
+      "reviewed": true,
+      "executable_rule": "toilet"
+    },
+    {
+      "id": "MATRIX-166",
+      "title": "Трубы — материал не выяснен",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0282",
+        "DOC-L0283",
+        "DOC-L0285",
+        "DOC-L0287"
+      ],
+      "resolution": "Применять условия карточки pipes",
+      "reviewed": true,
+      "executable_rule": "pipes"
+    },
+    {
+      "id": "MATRIX-167",
+      "title": "Трубы пластиковые — любой вид работ",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0282",
+        "DOC-L0283",
+        "DOC-L0285",
+        "DOC-L0287"
+      ],
+      "resolution": "Применять условия карточки pipes",
+      "reviewed": true,
+      "executable_rule": "pipes"
+    },
+    {
+      "id": "MATRIX-168",
+      "title": "Замена металлических/металлопластиковых труб на пластиковые",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0282",
+        "DOC-L0283",
+        "DOC-L0285",
+        "DOC-L0287"
+      ],
+      "resolution": "Применять условия карточки pipes",
+      "reviewed": true,
+      "executable_rule": "pipes"
+    },
+    {
+      "id": "MATRIX-169",
+      "title": "Стояковые и канализационные трубы — перенос/врезка/замена",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0284",
+        "DOC-L0286"
+      ],
+      "resolution": "Применять условия карточки pipes-riser",
+      "reviewed": true,
+      "executable_rule": "pipes-riser"
+    },
+    {
+      "id": "MATRIX-170",
+      "title": "Отопление — любые работы (перенос/врезка/замена/установка труб, батарей, радиаторов)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0284",
+        "DOC-L0286"
+      ],
+      "resolution": "Применять условия карточки pipes-riser",
+      "reviewed": true,
+      "executable_rule": "pipes-riser"
+    },
+    {
+      "id": "MATRIX-171",
+      "title": "Мелкая сантехника (счётчики, фильтры, заглушки, шланги, ниппели, гибкая подводка)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0289",
+        "DOC-L0290"
+      ],
+      "resolution": "Применять условия карточки plumbing-small",
+      "reviewed": true,
+      "executable_rule": "plumbing-small"
+    },
+    {
+      "id": "MATRIX-172",
+      "title": "Засоры — устранение любой сложности",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0292"
+      ],
+      "resolution": "Применять условия карточки drain",
+      "reviewed": true,
+      "executable_rule": "drain"
+    },
+    {
+      "id": "MATRIX-173",
+      "title": "Подключение БТ к сантехнике (стиральные/посудомоечные/сушильные машины, водонагреватели)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0294",
+        "DOC-L0295",
+        "DOC-L0320",
+        "DOC-L0321"
+      ],
+      "resolution": "Применять условия карточки mnc-connect",
+      "reviewed": true,
+      "executable_rule": "mnc-connect"
+    },
+    {
+      "id": "MATRIX-174",
+      "title": "Розетки/выключатели — любой вид работ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0298",
+        "DOC-L0299"
+      ],
+      "resolution": "Применять условия карточки sockets",
+      "reviewed": true,
+      "executable_rule": "sockets"
+    },
+    {
+      "id": "MATRIX-175",
+      "title": "Люстры/светильники/бра — установка/замена и прочие работы",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0301",
+        "DOC-L0302",
+        "DOC-L0303",
+        "DOC-L0304",
+        "DOC-L0306"
+      ],
+      "resolution": "Применять условия карточки light",
+      "reviewed": true,
+      "executable_rule": "light"
+    },
+    {
+      "id": "MATRIX-176",
+      "title": "Ремонт светодиодной люстры/светильника/бра",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0305"
+      ],
+      "resolution": "Применять условия карточки light-led-repair",
+      "reviewed": true,
+      "executable_rule": "light-led-repair"
+    },
+    {
+      "id": "MATRIX-177",
+      "title": "Автоматы/кабели/провода — любой вид работ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0308",
+        "DOC-L0309",
+        "DOC-L0312",
+        "DOC-L0313"
+      ],
+      "resolution": "Применять условия карточки electric",
+      "reviewed": true,
+      "executable_rule": "electric"
+    },
+    {
+      "id": "MATRIX-178",
+      "title": "Высоковольтные работы (трансформаторная будка, столб)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0310"
+      ],
+      "resolution": "Применять условия карточки high-voltage",
+      "reviewed": true,
+      "executable_rule": "high-voltage"
+    },
+    {
+      "id": "MATRIX-179",
+      "title": "Интернет-кабели (витая пара, оптоволокно)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0311"
+      ],
+      "resolution": "Применять условия карточки internet-cable-mnc",
+      "reviewed": true,
+      "executable_rule": "internet-cable-mnc"
+    },
+    {
+      "id": "MATRIX-180",
+      "title": "Лампочки — замена и установка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0315",
+        "DOC-L0316",
+        "DOC-L0318"
+      ],
+      "resolution": "Применять условия карточки bulb",
+      "reviewed": true,
+      "executable_rule": "bulb"
+    },
+    {
+      "id": "MATRIX-181",
+      "title": "Лампочки — ремонт",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0317"
+      ],
+      "resolution": "Применять условия карточки bulb-repair",
+      "reviewed": true,
+      "executable_rule": "bulb-repair"
+    },
+    {
+      "id": "MATRIX-182",
+      "title": "Подключение БТ к электрике (электроплиты, варочные поверхности, посудомойки, водонагреватели)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0294",
+        "DOC-L0295",
+        "DOC-L0320",
+        "DOC-L0321"
+      ],
+      "resolution": "Применять условия карточки mnc-connect",
+      "reviewed": true,
+      "executable_rule": "mnc-connect"
+    },
+    {
+      "id": "MATRIX-183",
+      "title": "Мебель — ремонт, сборка, установка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0323",
+        "DOC-L0324",
+        "DOC-L0325",
+        "DOC-L0326"
+      ],
+      "resolution": "Применять условия карточки furniture",
+      "reviewed": true,
+      "executable_rule": "furniture"
+    },
+    {
+      "id": "MATRIX-184",
+      "title": "Мебель — реставрация, перетяжка, замена/ремонт пружин, работа с ротангом, замена стекла",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0325",
+        "DOC-L0470"
+      ],
+      "resolution": "Применять условия карточки appearance",
+      "reviewed": true,
+      "executable_rule": "appearance"
+    },
+    {
+      "id": "MATRIX-185",
+      "title": "Кухня — сборка и установка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0328",
+        "DOC-L0330",
+        "DOC-L0331"
+      ],
+      "resolution": "Применять условия карточки kitchen",
+      "reviewed": true,
+      "executable_rule": "kitchen"
+    },
+    {
+      "id": "MATRIX-186",
+      "title": "Линолеум/ламинат — любой вид работ (полы готовы)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0334",
+        "DOC-L0335",
+        "DOC-L0336"
+      ],
+      "resolution": "Применять условия карточки floor",
+      "reviewed": true,
+      "executable_rule": "floor"
+    },
+    {
+      "id": "MATRIX-187",
+      "title": "Линолеум/ламинат при НЕготовых полах",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0334",
+        "DOC-L0335",
+        "DOC-L0336"
+      ],
+      "resolution": "Применять условия карточки floor",
+      "reviewed": true,
+      "executable_rule": "floor"
+    },
+    {
+      "id": "MATRIX-188",
+      "title": "Плинтус/порожек/потолочная плитка — любой вид работ",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0338",
+        "DOC-L0339"
+      ],
+      "resolution": "Применять условия карточки plinth",
+      "reviewed": true,
+      "executable_rule": "plinth"
+    },
+    {
+      "id": "MATRIX-189",
+      "title": "Дезинфекция — травля тараканов, клопов, муравьёв и т.д.",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0342",
+        "DOC-L0343",
+        "DOC-L0344"
+      ],
+      "resolution": "Применять условия карточки pest",
+      "reviewed": true,
+      "executable_rule": "pest"
+    },
+    {
+      "id": "MATRIX-190",
+      "title": "Навес аксессуаров и гардин (картины, крючки, шторы, часы, ковры, вешалки, полки, зеркала, карнизы; настенные и потолочные гардины)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0349",
+        "DOC-L0350",
+        "DOC-L0351",
+        "DOC-L0352",
+        "DOC-L0353"
+      ],
+      "resolution": "Применять условия карточки hanging",
+      "reviewed": true,
+      "executable_rule": "hanging"
+    },
+    {
+      "id": "MATRIX-191",
+      "title": "Установка любых кронштейнов (для телевизора, бойлера и т.д.)",
+      "previously_disputed": true,
+      "status": "conditional_mount",
+      "primary_refs": [
+        "DOC-L0209",
+        "DOC-L0350"
+      ],
+      "resolution": "Применять условия карточки tv-mount",
+      "reviewed": true,
+      "executable_rule": "tv-mount"
+    },
+    {
+      "id": "MATRIX-192",
+      "title": "Турник/шведская стенка — установка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0355",
+        "DOC-L0356",
+        "DOC-L0358"
+      ],
+      "resolution": "Применять условия карточки sport",
+      "reviewed": true,
+      "executable_rule": "sport"
+    },
+    {
+      "id": "MATRIX-193",
+      "title": "Турник/шведская стенка — ремонт",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0357"
+      ],
+      "resolution": "Применять условия карточки sport-repair",
+      "reviewed": true,
+      "executable_rule": "sport-repair"
+    },
+    {
+      "id": "MATRIX-194",
+      "title": "Сушилка для белья (внутри помещения) — работа любой сложности",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0360",
+        "DOC-L0361",
+        "DOC-L0362"
+      ],
+      "resolution": "Применять условия карточки drying",
+      "reviewed": true,
+      "executable_rule": "drying"
+    },
+    {
+      "id": "MATRIX-195",
+      "title": "Сушилка для белья наружная (снаружи квартиры/балкона)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0360",
+        "DOC-L0361",
+        "DOC-L0362"
+      ],
+      "resolution": "Применять условия карточки drying",
+      "reviewed": true,
+      "executable_rule": "drying"
+    },
+    {
+      "id": "MATRIX-196",
+      "title": "Замки/ручки дверей — замена и установка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0364",
+        "DOC-L0365",
+        "DOC-L0367",
+        "DOC-L0368"
+      ],
+      "resolution": "Применять условия карточки lock",
+      "reviewed": true,
+      "executable_rule": "lock"
+    },
+    {
+      "id": "MATRIX-197",
+      "title": "Врезка замка/ручки двери",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0364"
+      ],
+      "resolution": "Применять условия карточки lock-cut",
+      "reviewed": true,
+      "executable_rule": "lock-cut"
+    },
+    {
+      "id": "MATRIX-198",
+      "title": "Вскрытие замков",
+      "previously_disputed": true,
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0366"
+      ],
+      "resolution": "Применять условия карточки lock-open",
+      "reviewed": true,
+      "executable_rule": "lock-open"
+    },
+    {
+      "id": "MATRIX-199",
+      "title": "Пластиковые окна — замена ручки/уплотнительной резинки, регулировка/продувка (промывка), москитная сетка",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0370",
+        "DOC-L0371",
+        "DOC-L0373"
+      ],
+      "resolution": "Применять условия карточки window",
+      "reviewed": true,
+      "executable_rule": "window"
+    },
+    {
+      "id": "MATRIX-200",
+      "title": "Пластиковые окна — ремонт и установка",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0372"
+      ],
+      "resolution": "Применять условия карточки window-install",
+      "reviewed": true,
+      "executable_rule": "window-install"
+    },
+    {
+      "id": "MATRIX-201",
+      "title": "Смежная зона «Бытовая техника»: вся БТ по регламенту БТ через МНЧ (стиральные/сушильные, посудомойки, духовки/электроплиты, бойлеры, кофемашины и пр.)",
+      "previously_disputed": false,
+      "status": "conditional_route",
+      "primary_refs": [
+        "DOC-L0375"
+      ],
+      "resolution": "МНЧ: БТ при отсутствии филиала БТ, холодильники по согласованию",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-202",
+      "title": "Холодильники/морозилки через МНЧ",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0375",
+        "DOC-L0448"
+      ],
+      "resolution": "Холодильник на МНЧ требует согласования",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-203",
+      "title": "Техника с газовыми элементами (газовые бойлеры/колонки, газовые плиты)",
+      "previously_disputed": true,
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0389",
+        "DOC-L0401"
+      ],
+      "resolution": "Применять условия карточки gas",
+      "reviewed": true,
+      "executable_rule": "gas"
+    },
+    {
+      "id": "MATRIX-204",
+      "title": "Телевизоры (сквозная тема, приём на МНЧ по метке объявления)",
+      "previously_disputed": false,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0377"
+      ],
+      "resolution": "ТВ по регламенту БТ с исходным направлением",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-205",
+      "title": "Диагностика техники (с которой работаем)",
+      "previously_disputed": false,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0472"
+      ],
+      "resolution": "Диагностика поддерживаемой техники",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-206",
+      "title": "Составление сметы (по нашим видам работ)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0460"
+      ],
+      "resolution": "Применять условия карточки estimate",
+      "reviewed": true,
+      "executable_rule": "estimate"
+    },
+    {
+      "id": "MATRIX-207",
+      "title": "Сварочные работы — любые",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0461",
+        "DOC-L0462"
+      ],
+      "resolution": "Применять условия карточки welding",
+      "reviewed": true,
+      "executable_rule": "welding"
+    },
+    {
+      "id": "MATRIX-208",
+      "title": "Смешанная заявка (часть услуг — приём, часть — согласование)",
+      "previously_disputed": false,
+      "status": "mixed",
+      "primary_refs": [
+        "DOC-L0463"
+      ],
+      "resolution": "Каждую работу оценивать отдельно",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-209",
+      "title": "Отделка и всё прочее вне перечня (штукатурка, обои, плитка, покраска стен и т.п.)",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-210",
+      "title": "Общие квалификаторы на любую заявку МНЧ",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0459"
+      ],
+      "resolution": "Материалы, место и объём",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-211",
+      "title": "МНЧ НЕ покрывает: КП-профильные темы (ПК/ноутбуки/моноблоки, мониторы/видеокарты, роутеры, принтеры, телефоны/планшеты, восстановление данных, обжим кабеля, чистка/настройка PS/Xbox/Switch/Steam Deck)",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0702",
+        "DOC-L0704",
+        "DOC-L0705",
+        "DOC-L0706"
+      ],
+      "resolution": "КП тема на МНЧ — профильный маршрут",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-212",
+      "title": "Заявка от юрлица с оплатой по счёту",
+      "previously_disputed": false,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0800",
+        "DOC-L0801",
+        "DOC-L0802"
+      ],
+      "resolution": "Оплата по счёту — согласование",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-213",
+      "title": "Выезд за границы филиала/города-спутника (>36 км)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0220",
+        "DOC-L0629",
+        "DOC-L0630",
+        "DOC-L0631"
+      ],
+      "resolution": "Территория проверяется по актуальной карте",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-214",
+      "title": "Партнёрский источник в МНЧ — озвучка выезда/диагностики",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0756",
+        "DOC-L0757",
+        "DOC-L0758",
+        "DOC-L0759",
+        "DOC-L0760",
+        "DOC-L0761"
+      ],
+      "resolution": "Источник и территория определяют выезд",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-215",
+      "title": "Клиент с бюджетом менее 800 ₽ (БТ/МНЧ)",
+      "previously_disputed": false,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0786",
+        "DOC-L0787",
+        "DOC-L0792",
+        "DOC-L0793"
+      ],
+      "resolution": "Не обещать фиксированную цену в бюджет",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-216",
+      "title": "ТВ: тип телевизора (кинескопный/проекционный/плазменный/ЖК LED-OLED-QLED)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-217",
+      "title": "ТВ ЖК: ремонт (кроме матрицы/экрана)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-218",
+      "title": "ТВ ЖК: замена гнёзд / любая пайка",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0195",
+        "DOC-L0426"
+      ],
+      "resolution": "Обязательная озвучка пайки",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-219",
+      "title": "ТВ ЖК: подсветка / инвертор («звук есть, картинки нет»)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-220",
+      "title": "ТВ ЖК: матрица (замена/ремонт), разбитый экран, полосы на экране",
+      "previously_disputed": true,
+      "status": "matrix",
+      "primary_refs": [
+        "DOC-L0214",
+        "DOC-L0223",
+        "DOC-L0224",
+        "DOC-L0439",
+        "DOC-L0445",
+        "DOC-L0446",
+        "TG1-566"
+      ],
+      "resolution": "Подтверждённая матрица: отказ/согласование по указанию пользователя, без обещания ремонта",
+      "reviewed": true,
+      "executable_rule": "tv-matrix"
+    },
+    {
+      "id": "MATRIX-221",
+      "title": "ТВ ЖК: проблема с изображением БЕЗ подтверждения матрицы",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-222",
+      "title": "ТВ: тип неизвестен и модель не названа",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-223",
+      "title": "ТВ кинескопные / проекционные / плазменные: ремонт",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0192",
+        "DOC-L0207",
+        "DOC-L0212",
+        "DOC-L0213",
+        "DOC-L0217",
+        "DOC-L0423",
+        "DOC-L0432",
+        "DOC-L0437",
+        "DOC-L0438",
+        "DOC-L0442"
+      ],
+      "resolution": "Применять условия карточки tv",
+      "reviewed": true,
+      "executable_rule": "tv"
+    },
+    {
+      "id": "MATRIX-224",
+      "title": "ТВ: любая настройка (изображение, приложения, интернет, прошивка, аккаунты, ошибки, Smart/IPTV, VPN)",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-225",
+      "title": "ТВ: подключение и настройка пульта к любому типу ТВ",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-226",
+      "title": "ТВ: комнатные антенны (настройка и установка)",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-227",
+      "title": "ТВ: настройка каналов",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0202",
+        "DOC-L0203",
+        "DOC-L0204",
+        "DOC-L0205"
+      ],
+      "resolution": "Применять условия карточки tv-channels",
+      "reviewed": true,
+      "executable_rule": "tv-channels"
+    },
+    {
+      "id": "MATRIX-228",
+      "title": "ТВ: наружные антенны (подключение/настройка/установка)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433"
+      ],
+      "resolution": "Применять условия карточки tv-outdoor",
+      "reviewed": true,
+      "executable_rule": "tv-outdoor"
+    },
+    {
+      "id": "MATRIX-229",
+      "title": "Спутниковое ТВ (тарелка, Триколор, НТВ+)",
+      "previously_disputed": true,
+      "status": "conflict",
+      "primary_refs": [
+        "DOC-L0205",
+        "DOC-L0208",
+        "DOC-L0433",
+        "TG1-612"
+      ],
+      "resolution": "Общий документ и объявление расходятся; передать оператору",
+      "reviewed": true,
+      "executable_rule": "tv-satellite"
+    },
+    {
+      "id": "MATRIX-230",
+      "title": "ТВ: крепление к стене на кронштейн (навес ТВ)",
+      "previously_disputed": true,
+      "status": "conditional_mount",
+      "primary_refs": [
+        "DOC-L0209",
+        "DOC-L0350"
+      ],
+      "resolution": "Применять условия карточки tv-mount",
+      "reviewed": true,
+      "executable_rule": "tv-mount"
+    },
+    {
+      "id": "MATRIX-231",
+      "title": "ТВ: поляризационная плёнка; ножки и подставки (установка/замена/ремонт)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0211",
+        "DOC-L0436"
+      ],
+      "resolution": "Применять условия карточки tv-film",
+      "reviewed": true,
+      "executable_rule": "tv-film"
+    },
+    {
+      "id": "MATRIX-232",
+      "title": "Домашний кинотеатр: подключение и настройка",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-233",
+      "title": "ТВ-приставки, ресиверы, домашние кинотеатры: РЕМОНТ и прошивка",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0210",
+        "DOC-L0435"
+      ],
+      "resolution": "Применять условия карточки tv-box-repair",
+      "reviewed": true,
+      "executable_rule": "tv-box-repair"
+    },
+    {
+      "id": "MATRIX-234",
+      "title": "ТВ/цифровые приставки и ресиверы: подключение и настройка",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0197",
+        "DOC-L0198",
+        "DOC-L0199",
+        "DOC-L0200",
+        "DOC-L0201",
+        "DOC-L0428",
+        "DOC-L0429",
+        "DOC-L0430"
+      ],
+      "resolution": "Применять условия карточки tv-setup",
+      "reviewed": true,
+      "executable_rule": "tv-setup"
+    },
+    {
+      "id": "MATRIX-235",
+      "title": "Игровые приставки PS / Nintendo Switch / Steam Deck: чистка и настройка",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0243",
+        "DOC-L0244"
+      ],
+      "resolution": "Применять условия карточки console",
+      "reviewed": true,
+      "executable_rule": "console"
+    },
+    {
+      "id": "MATRIX-236",
+      "title": "Игровые приставки: ремонт и прошивка (все, включая Xbox); настройка Xbox; иные консоли",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0243",
+        "DOC-L0244"
+      ],
+      "resolution": "Применять условия карточки console",
+      "reviewed": true,
+      "executable_rule": "console"
+    },
+    {
+      "id": "MATRIX-237",
+      "title": "ТВ: территория приёма",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0220",
+        "DOC-L0221"
+      ],
+      "resolution": "ТВ за пределами основного города/спутника — согласование",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-238",
+      "title": "Газ: бойлеры/плиты/духовки/колонки с газовыми элементами",
+      "previously_disputed": true,
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0389",
+        "DOC-L0401"
+      ],
+      "resolution": "Применять условия карточки gas",
+      "reviewed": true,
+      "executable_rule": "gas"
+    },
+    {
+      "id": "MATRIX-239",
+      "title": "Вскрытие замков",
+      "previously_disputed": true,
+      "status": "refuse",
+      "primary_refs": [
+        "DOC-L0366"
+      ],
+      "resolution": "Применять условия карточки lock-open",
+      "reviewed": true,
+      "executable_rule": "lock-open"
+    },
+    {
+      "id": "MATRIX-240",
+      "title": "Скупка техники на запчасти («выкупаете? продам нерабочий ТВ»)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0250",
+        "DOC-L0251"
+      ],
+      "resolution": "Скупка не заявлена как профильная услуга",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-241",
+      "title": "Интим/секс-товары",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0250",
+        "DOC-L0251"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-242",
+      "title": "Телефоны/планшеты: РЕМОНТ, прошивка, разблокировка",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0234",
+        "DOC-L0235",
+        "DOC-L0236"
+      ],
+      "resolution": "Применять условия карточки phone-repair",
+      "reviewed": true,
+      "executable_rule": "phone-repair"
+    },
+    {
+      "id": "MATRIX-243",
+      "title": "Картриджи: заправка/ремонт/замена/прошивка, замена тонера",
+      "previously_disputed": true,
+      "status": "conflict",
+      "primary_refs": [
+        "DOC-L0186",
+        "TG1-589"
+      ],
+      "resolution": "Текущий документ разрешает согласование, объявление запрещает; передать оператору",
+      "reviewed": true,
+      "executable_rule": "printer-cartridge"
+    },
+    {
+      "id": "MATRIX-244",
+      "title": "Обход паролей/блокировок без данных владельца (экран Android, Google FRP, Apple ID)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0230",
+        "DOC-L0238"
+      ],
+      "resolution": "Применять условия карточки phone-access",
+      "reviewed": true,
+      "executable_rule": "phone-access"
+    },
+    {
+      "id": "MATRIX-245",
+      "title": "Туалетные кабинки / душевые перегородки",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-246",
+      "title": "Авто (любые работы)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-247",
+      "title": "Стройка с нуля / капстрой (в т.ч. проводка в строящемся доме)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-248",
+      "title": "Медицина, оружие, вредное/незаконное",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня; никаких опасных инструкций",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-249",
+      "title": "Замена стеклокерамики варочной панели",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0399",
+        "DOC-L0400",
+        "DOC-L0471"
+      ],
+      "resolution": "Применять условия карточки oven-door",
+      "reviewed": true,
+      "executable_rule": "oven-door"
+    },
+    {
+      "id": "MATRIX-250",
+      "title": "Распил / укоротить мебель",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-251",
+      "title": "Просьба посоветовать другого мастера/конкурента",
+      "previously_disputed": true,
+      "status": "handoff",
+      "primary_refs": [
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Нет проверенного справочника рекомендаций конкурентов",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-252",
+      "title": "Кондиционеры / сплит-системы",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0408",
+        "DOC-L0410"
+      ],
+      "resolution": "Применять условия карточки aircon",
+      "reviewed": true,
+      "executable_rule": "aircon"
+    },
+    {
+      "id": "MATRIX-253",
+      "title": "Сварочные работы (любые)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0461",
+        "DOC-L0462"
+      ],
+      "resolution": "Применять условия карточки welding",
+      "reviewed": true,
+      "executable_rule": "welding"
+    },
+    {
+      "id": "MATRIX-254",
+      "title": "Дезинфекция / травля насекомых (тараканы, клопы, муравьи)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0342",
+        "DOC-L0343",
+        "DOC-L0344"
+      ],
+      "resolution": "Применять условия карточки pest",
+      "reviewed": true,
+      "executable_rule": "pest"
+    },
+    {
+      "id": "MATRIX-255",
+      "title": "Промышленная техника / оборудование",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0466"
+      ],
+      "resolution": "Применять условия карточки industrial",
+      "reviewed": true,
+      "executable_rule": "industrial"
+    },
+    {
+      "id": "MATRIX-256",
+      "title": "Реставрация и восстановление внешнего вида",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0325",
+        "DOC-L0470"
+      ],
+      "resolution": "Применять условия карточки appearance",
+      "reviewed": true,
+      "executable_rule": "appearance"
+    },
+    {
+      "id": "MATRIX-257",
+      "title": "Территория: черта города (основной филиал)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0220"
+      ],
+      "resolution": "Подтвердить фактическую территорию",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-258",
+      "title": "Территория: город-спутник",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0220"
+      ],
+      "resolution": "Проверить спутник по текущему реестру",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-259",
+      "title": "Территория: за чертой города / вне спутника",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0220"
+      ],
+      "resolution": "Вне зоны",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-260",
+      "title": "Территория: правило 36 км (ТОЛЬКО направление КП)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0220",
+        "DOC-L0629",
+        "DOC-L0630",
+        "DOC-L0631"
+      ],
+      "resolution": "36 км только КП с исключением ТВ; проверяется маршрутом",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-261",
+      "title": "Территория: московские города-исключения КП (Наро-Фоминск, Истра, Клин, Кронштадт, Гатчина)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0651",
+        "DOC-L0652",
+        "DOC-L0653",
+        "DOC-L0654",
+        "DOC-L0655"
+      ],
+      "resolution": "Время берётся из актуальной карты, без угадывания зоны",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-262",
+      "title": "Территория: город без филиала нужного направления",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0253",
+        "DOC-L0705"
+      ],
+      "resolution": "Проверить профильный филиал",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-263",
+      "title": "Территория: Петрозаводск (закрытый филиал)",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0219",
+        "DOC-L0253"
+      ],
+      "resolution": "Старое закрытие не подтверждено актуальными текстами: не делать отказ из старой матрицы, проверить реестр при оформлении",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-264",
+      "title": "Территория: Элиста",
+      "previously_disputed": true,
+      "status": "operational_unknown",
+      "primary_refs": [
+        "TG1-651"
+      ],
+      "resolution": "Элиста: закрытие в TG, доступность в CRM; нужна проверка",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-265",
+      "title": "Темы вне всех направлений (генератор, инкубатор, электрокамин и любое «Прочая»)",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0250",
+        "DOC-L0251",
+        "DOC-L0452",
+        "DOC-L0453"
+      ],
+      "resolution": "Вне перечня",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-266",
+      "title": "Правило: направление заявки = направление объявления (метки)",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L1307",
+        "DOC-L1308"
+      ],
+      "resolution": "Направление источника и регламент передачи",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-267",
+      "title": "Правило: ТВ — сквозная тема, регламент один, направление по метке",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0377"
+      ],
+      "resolution": "ТВ сквозная тема с направлением источника",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-268",
+      "title": "Правило: кросс-принятие (тема чужого направления)",
+      "previously_disputed": true,
+      "status": "route",
+      "primary_refs": [
+        "DOC-L0252",
+        "DOC-L0702",
+        "DOC-L0704"
+      ],
+      "resolution": "Разные маршруты для КП и БТ/МНЧ",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-269",
+      "title": "Правило: смешанная заявка (несколько работ сразу)",
+      "previously_disputed": true,
+      "status": "mixed",
+      "primary_refs": [
+        "DOC-L0463"
+      ],
+      "resolution": "Профильную часть не терять, обещание согласуемой запрещено",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-270",
+      "title": "Смежная зона: вся БТ на направлении МНЧ",
+      "previously_disputed": true,
+      "status": "conditional_route",
+      "primary_refs": [
+        "DOC-L0375"
+      ],
+      "resolution": "БТ на МНЧ при отсутствии БТ; холодильники требуют согласования",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-271",
+      "title": "Холодильники/морозилки на МНЧ",
+      "previously_disputed": true,
+      "status": "agree",
+      "primary_refs": [
+        "DOC-L0375",
+        "DOC-L0448"
+      ],
+      "resolution": "Холодильник на МНЧ",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-272",
+      "title": "Диагностика техники из перечня (сквозное БТ и КП)",
+      "previously_disputed": true,
+      "status": "accept",
+      "primary_refs": [
+        "DOC-L0257",
+        "DOC-L0472"
+      ],
+      "resolution": "Диагностика поддерживаемой техники",
+      "reviewed": true,
+      "executable_rule": null
+    },
+    {
+      "id": "MATRIX-273",
+      "title": "Служебное: озвучки цен «от» при приёме",
+      "previously_disputed": true,
+      "status": "qualify",
+      "primary_refs": [
+        "DOC-L0469",
+        "DOC-L0732",
+        "DOC-L0738",
+        "DOC-L0741",
+        "DOC-L0743",
+        "DOC-L0774",
+        "DOC-L0777"
+      ],
+      "resolution": "Цена, этап, единица и согласие",
+      "reviewed": true,
+      "executable_rule": null
+    }
+  ],
+  "priority": [
+    "direct_user_amendment",
+    "explicit_service_exception",
+    "direction_scoped_primary",
+    "general_primary",
+    "historical_examples_style_only"
+  ],
+  "owner_amendments": [
+    {
+      "id": "JIVO-IDENTITY",
+      "type": "user",
+      "date": "2026-10-15",
+      "text": "При оформлении Jivo указывать источник, имя мастера из объявления либо название аккаунта в основном комментарии. Если представились другим именем, сохранить и его вместе с названием аккаунта.",
+      "scope": "jivo/identity"
+    },
+    {
+      "id": "USER-20261015-723",
+      "type": "user",
+      "date": "2026-10-15",
+      "text": "Для партнёра 723 применять общий прайс КП. Выезд/диагностика этим уточнением не менялись.",
+      "scope": "kp/723/prices"
+    },
+    {
+      "id": "USER-20261015-TV",
+      "type": "user",
+      "date": "2026-10-15",
+      "text": "Подтверждённая поломка матрицы ТВ: отказ либо согласование с филиалом. Обещание ремонта без подтверждения запрещено.",
+      "scope": "tv/matrix"
+    },
+    {
+      "id": "OWNER-CHATBOOKING-20261016",
+      "type": "owner_amendment",
+      "date": "2026-10-16",
+      "text": "Уточнение владельца: обычную первичную заявку Avito/Jivo можно создавать по полностью подтверждённой переписке, без звонка оператора. Требования к звонку мастера перед выездом сохраняются. Модерации и согласования не допускаются в автоматический приём."
+    },
+    {
+      "id": "OWNER-TV-BANDS-20261017",
+      "type": "owner_amendment",
+      "date": "2026-10-17",
+      "text": "Прямое уточнение владельца: подтверждённые полосы или полоски на экране телевизора — сразу вежливый отказ в помощи. Полосы сами по себе не доказывают повреждение матрицы; не выдавать предположение за диагноз. Отрицание или гипотетический вопрос о полосах не являются подтверждённым симптомом.",
+      "scope": "tv/screen_bands",
+      "topics": [
+        "tv",
+        "полосы",
+        "отказ"
+      ],
+      "active_primary": true,
+      "evidence": "Direct user message 2026-10-17: У нас полосы на экране сразу слив что не сможем помочь"
+    },
+    {
+      "id": "OWNER-AVITO-PARTNERS-20261017",
+      "type": "owner_amendment",
+      "date": "2026-10-17",
+      "text": "Прямое уточнение владельца: в Avito работаем только с партнёрами 7, 723, 748 и 340. 007 — то же обозначение партнёра 7. При другом или отсутствующем номере партнёра помощник передаёт проверку источника оператору; партнёр не определяется по тексту клиента.",
+      "scope": "avito/source_partner",
+      "active_primary": true,
+      "evidence": "Direct user message: У нас на авито толко 7 723 748 и 340"
+    },
+    {
+      "id": "OWNER-FURNITURE-REPAIR-MIN-20261018",
+      "type": "owner_amendment",
+      "date": "2026-10-18",
+      "active_primary": true,
+      "scope": "mnc/ordinary_furniture_repair/minimum",
+      "topics": [
+        "prices",
+        "furniture",
+        "ремонт мебели"
+      ],
+      "text": "Прямое уточнение владельца: для обычного ремонта мебели без согласования также действует стоимость услуги от 1500 рублей. Это минимальная стоимость, а не фиксированная итоговая сумма. Реставрация, перетяжка, пружинные блоки, ротанг, стекло и другие работы по согласованию этим уточнением в обычный приём не переводятся.",
+      "evidence": "Ответ владельца в текущем чате: Да, от 1500 ₽ также для обычного ремонта мебели"
+    },
+    {
+      "id": "OWNER-FAR-TRIP-DECIMAL-20261018",
+      "type": "user",
+      "date": "2026-10-18",
+      "scope": "КП / дальний выезд / только числовой порог; исключения ТВ, карты и Белгорода сохраняются",
+      "text": "Прямое уточнение владельца: 36,9 км тоже считается «до 36 км». Для разрешённого дальнего выезда КП используем целые километры без округления вверх: расстояние меньше 37 км входит в норму, с 37 км требуется согласование. Это не расширяет приём ТВ, БТ, МНЧ, зон со строгими контурами и Белгорода. Признак «Дальний выезд» не означает платный выезд."
+    },
+    {
+      "id": "OWNER-MNC-TV-MOUNT-20261018",
+      "type": "user",
+      "date": "2026-10-18",
+      "scope": "mnc / монтаж телевизора и кронштейна",
+      "text": "Прямое уточнение владельца: на МНЧ установка кронштейна вместе с креплением самого телевизора принимается без согласования. Сохраняются необходимые уточнения стены и готовности крепежа; это не разрешение на ремонт телевизора. Правило КП о согласовании крепления телевизора не изменяется."
+    },
+    {
+      "id": "OWNER-COFFEE-VENDING-20261019",
+      "type": "owner_amendment",
+      "date": "2026-10-19",
+      "active_primary": true,
+      "scope": "БТ / только классификация кофемашин",
+      "topics": [
+        "coffee",
+        "кофемашина",
+        "промышленная техника"
+      ],
+      "text": "Владелец уточнил: промышленными кофемашинами считаются торговые автоматы с кофе и терминалом оплаты. Профессиональное исполнение, две группы и рожковый тип сами по себе не требуют согласования по промышленной технике. Если клиент называет промышленную кофемашину, но наличие торгового автомата с терминалом неясно, уточнить именно это. Обычные правила кофемашин, в том числе отдельное правило капсульных, сохраняются. Критерий платёжного терминала не применяется к промышленной технике других видов.",
+      "evidence": "Прямой ответ владельца в текущем чате; owner-coffee-industrial-20261019.json"
+    },
+    {
+      "id": "OWNER-KP-ONSITE-ONLY-20261020",
+      "type": "owner_amendment",
+      "date": "2026-10-20",
+      "active_primary": true,
+      "scope": "kp",
+      "topics": [
+        "выезд",
+        "привоз",
+        "формат работы"
+      ],
+      "text": "Прямое уточнение владельца: «Всегда только выезд — привоз не принимаем». На КП клиент не может сам привезти технику. Отвечать прямо и вежливо: мастер выезжает на адрес клиента, привоз техники не принимается. Это не подтверждает отсутствие мастерской, её адрес, доступность мастера, территорию выезда, запись или создание заявки."
+    },
+    {
+      "id": "OWNER-KP-PARTNER-DIAGNOSTIC-20261020",
+      "type": "owner_amendment",
+      "date": "2026-10-20",
+      "active_primary": true,
+      "scope": "kp / партнёрский источник / выезд и диагностика",
+      "topics": [
+        "выезд",
+        "диагностика",
+        "цены",
+        "разграничение направлений"
+      ],
+      "text": "Уточнения владельца: на вопрос о клиенте Avito партнёра 7, которому нужна только диагностика принтера без ремонта, ответ «1000 ₽ по партнёрскому правилу». Затем уточнена граница: «1000 рублей выезд и диага только для КП». Партнёрские условия выезда и диагностики 1000 рублей, бесплатно при выполнении работ, применяются только к КП. В указанном обращении только на диагностику принтера не заменять 1000 рублей общим минимумом «от 500». На БТ и МНЧ не переносить это правило независимо от номера партнёра, включая 723; применять их собственные действующие условия. Другие услуги со стоимостью 1000 рублей, общие правила территории, вопросы об оплате невозможного ремонта и необходимость согласований этим уточнением не меняются.",
+      "evidence": "Прямые ответы владельца в текущем чате 2026-10-20; test-artifacts/current-pilot/latest-turn117/owner-price-scope117.json"
+    },
+    {
+      "id": "OWNER-DIAGNOSTIC-ONLY-MIN-20261020",
+      "type": "owner_amendment",
+      "date": "2026-10-20",
+      "active_primary": true,
+      "scope": "kp / bt; клиент заказывает только диагностику без ремонта",
+      "topics": [
+        "диагностика без ремонта",
+        "цены",
+        "минимум",
+        "приоритет уточнений владельца"
+      ],
+      "text": "На КП и БТ, если клиент заказывает только диагностику без ремонта, действует минимум от 500 рублей, включая партнёров. Это не фиксированные 500 и не обычный выезд с ремонтом. Первоначальное уточнение владельца распространялось на все направления; позднее OWNER-MNC-FREE-CALLOUT-20261021 заменило его в части МНЧ: отдельную платную диагностику на МНЧ не озвучиваем. Для МНЧ используем новое правило бесплатного выезда. Остальные условия партнёрского выезда КП сохраняются вне отдельной диагностики без ремонта.",
+      "supersedes_in_scope": [
+        "OWNER-KP-PARTNER-DIAGNOSTIC-20261020"
+      ],
+      "evidence": "Прямое сообщение владельца в текущем чате; test-artifacts/current-pilot/latest-turn120/owner-diagnostic-only500-adjudication.json",
+      "original_text_before_mnc_correction": "Последнее прямое уточнение владельца: «Если клиенту нужна будет только диагностика без ремонта то диагностика от 500 для всех направлений». Если клиент заказывает только диагностику без ремонта, на КП, БТ и МНЧ применяется минимум «от 500 рублей», включая партнёрские обращения. Это минимальная стоимость, а не фиксированные 500 рублей. Это новое уточнение заменяет прежнее решение о 1000 рублях для отдельной диагностики принтера; не переносит новый минимум на обычный вызов с ремонтом, и не меняет территорию или правила приёма. Прежние условия партнёрского выезда/диагностики КП сохраняются вне данного специального сценария.",
+      "superseded_in_scope_by": {
+        "mnc": "OWNER-MNC-FREE-CALLOUT-20261021",
+        "bt": "OWNER-BT-800-20261027"
+      }
+    },
+    {
+      "id": "OWNER-CLIENT-REPORTED-ACCEPTANCE-20261020",
+      "type": "owner_amendment",
+      "date": "2026-10-20",
+      "active_primary": true,
+      "scope": "КП/БТ/МНЧ: приём работы со слов клиента",
+      "text": "Уточнение владельца: если фактически названная клиентом работа принимается по регламенту без согласования, принимаем её со слов клиента. Необычная цель, техническая гипотеза клиента или чужое мнение о бессмысленности сами по себе не дают основание для отказа, оператора или дополнительного согласования. Не придумываем другую работу и не подтверждаем гипотезу как диагноз. Сохраняются обязательные ограничения именно запрошенной работы, цены, территории и оформления."
+    },
+    {
+      "id": "OWNER-NO-PARTS-OR-ONSITE-GUARANTEE-20261020",
+      "type": "owner_amendment",
+      "date": "2026-10-20",
+      "active_primary": true,
+      "scope": "КП/БТ/МНЧ: ответы о деталях, материалах, результате и ремонте на месте",
+      "text": "Прямое уточнение владельца: бот не обещает, что приедет с деталями или материалами и что на 100% всё сделает на месте. Коротко отвечаем через осмотр, сохраняем названную клиентом работу и продолжаем оформление по регламенту. Наличие, совместимость, закупку или доставку материалов, успешное устранение неисправности, один визит и срок завершения заранее не подтверждаем. Историческое «постараюсь взять» не является доказательством запаса и не копируется как обещание. Диагноз, цену, время визита и выполненные действия не выдумываем."
+    },
+    {
+      "id": "OWNER-MNC-FREE-CALLOUT-20261021",
+      "type": "owner_amendment",
+      "date": "2026-10-21",
+      "active_primary": true,
+      "scope": "mnc; условия выезда и озвучки диагностики",
+      "topics": [
+        "выезд",
+        "диагностика",
+        "цены",
+        "МНЧ"
+      ],
+      "text": "Уточнение владельца: «от 800 озвучка есть только на МНЧ и у них таковой диагностики только выезд бесплатный». На МНЧ отдельную платную диагностику не озвучиваем, включая запрос только осмотра без ремонта: выезд в черте города бесплатный. Это не обещание бесплатных работ, материалов, ремонта на месте или выезда за подтверждённую территорию. От 800 рублей применяется только к соответствующим работам МНЧ, с сохранением единицы измерения и специальных минимумов (например мебель от 1500, кухня от 2000). Прежнее уточнение диагностики от 500 остаётся для КП/БТ, в части МНЧ заменено этим правилом. Исторические озвучки сохраняем для аудита, ошибочную платную диагностику не считаем подтверждённым текущим прайсом.",
+      "supersedes_in_scope": [
+        "OWNER-DIAGNOSTIC-ONLY-MIN-20261020",
+        "DOC-L0759",
+        "DOC-L0760"
+      ],
+      "evidence": "Прямое сообщение владельца; test-artifacts/current-pilot/latest-turn129/owner-mnc-adjudication129.json"
+    },
+    {
+      "id": "OWNER-MNC-VIDEO-INTERCOM-20261022",
+      "type": "owner_amendment",
+      "date": "2026-10-22",
+      "active_primary": true,
+      "scope": "mnc / установка видеодомофона",
+      "text": "Прямое уточнение владельца: установка видеодомофона принимается только после согласования с филиалом. Навес телевизора или другая обычная работа в том же обращении не отменяет согласование видеодомофона. Код доступа или наличие домофона в адресе не являются заказом установки. Ответ не подтверждает проведённое согласование, цену, материалы или визит."
+    },
+    {
+      "id": "OWNER-MNC-KEY-FRAGMENT-20261022",
+      "type": "owner_amendment",
+      "date": "2026-10-22",
+      "active_primary": true,
+      "scope": "mnc / извлечение обломка ключа без вскрытия и замены",
+      "text": "Прямое уточнение владельца: извлечение обломка ключа без замены и без вскрытия замка принимается только после согласования с филиалом. Эту работу не подменяем обычной заменой замка и не объявляем отказом как вскрытие. Отдельный явный заказ вскрытия сохраняет запрет DOC-L0366; обычная замена или установка сохраняет DOC-L0364. Слова клиента или предложение сотрудника не подтверждают проведённое согласование."
+    },
+    {
+      "id": "OWNER-AVITO-QUESTIONNAIRE-PAYMENT-20261023",
+      "type": "owner_amendment",
+      "date": "2026-10-23",
+      "active_primary": true,
+      "scope": "avito / необязательная отметка способа оплаты в анкете",
+      "text": "Прямое уточнение владельца: отметку «Защита сделки» в анкете Авито игнорируем и продолжаем обычное оформление. Только из-за отметки не задаём дополнительный вопрос об оплате, не отказываем и не передаём оператору. Отметка не подтверждает платёж или подключённый сервис оплаты. Отдельный явный вопрос клиента или условие оплаты не удаляем и не выдаём за необязательную отметку."
+    },
+    {
+      "id": "OWNER-CREW-STANDARD-WORDING-20261023",
+      "type": "owner_amendment",
+      "date": "2026-10-23",
+      "active_primary": true,
+      "scope": "обычный вопрос о количестве исполнителей / легенда мастера",
+      "text": "Прямое уточнение владельца: на вопрос «Вы один приедете? Шкаф большой» обычно отвечаем «Я работаю один». По ситуации владелец допускает условную фразу «По возможности возьму коллегу с собой»; она не подтверждает доступность коллеги или гарантированный выезд вдвоём. Ответ на вопрос о составе не заменяем одним вопросом о цене. Явное требование двух исполнителей остаётся отдельным условием; свободный слот, фактический выезд и результат работы этой фразой не подтверждаются."
+    },
+    {
+      "id": "OWNER-CONTACT-FIRST-LINE-20261023",
+      "type": "owner_amendment",
+      "date": "2026-10-23",
+      "active_primary": true,
+      "scope": "CRM / служебный комментарий / номер клиента",
+      "text": "Прямое уточнение владельца: при записи указания, на какой номер звонить клиенту, это указание размещается отдельной первой строкой служебного комментария. В этой строке нет других заметок; остальные примечания начинаются ниже. Номер берётся из подтверждённой переписки или явного выбора оператора, не угадывается. После записи проверяются порядок и переносы строк. При повторе заметки не дублируются."
+    },
+    {
+      "id": "OWNER-JIVO-CLAIM-REPLY-20261023",
+      "type": "owner_amendment",
+      "date": "2026-10-23",
+      "active_primary": true,
+      "scope": "jivo / входящий ответ по существующей претензии",
+      "text": "Прямое уточнение владельца: при новом входящем сообщении клиента по ранее созданной претензии в Jivo — вопросе, уточнении или ответе — необходимо отписать в группу Претензии/Обратная связь соответствующего КП/БТ/МНЧ: «ID: Клиент ответил в диалоге на авито». ID заменяется номером связанной заявки, слова «на авито» сохраняются. Наличие прежней претензии проверяется в CRM; неподтверждённые поля и слова клиента не доказывают её создание. Исходящие и системные сообщения не создают отписку. Отправка отдельным проверенным действием, постоянный авто выключен."
+    },
+    {
+      "id": "OWNER-BT-800-20261027",
+      "type": "owner_amendment",
+      "date": "2026-10-27",
+      "active_primary": true,
+      "scope": "Бытовая техника, включая бытовую технику БТ/МНЧ; не КП и не обычные работы МНЧ",
+      "topics": [
+        "price",
+        "БТ",
+        "диагностика",
+        "от800",
+        "фиксированная первичная диагностика",
+        "прайс"
+      ],
+      "text": "С27октября2026 услуги по бытовой технике озвучиваем от800рублей, за исключением фиксированных цен и позиций прайса. Первичная диагностика бытовой техники(БТ/МНЧ), без разбора —800рублей фиксированно. Техническая диагностика бытовой техники(БТ/МНЧ), с разбором —от800рублей. Если тип неизвестен, не подменять одну категорию другой: назвать оба условия, не утверждать выполненный разбор. При продолжении работ диагностика бесплатная поDOC-L0761. Замена старых500в бытовой частиDOC-L0743/0759/0760иOWNER-DIAGNOSTIC-ONLY-MIN-20261020. КП: прежние условия500/партнёрские1000не меняются. Обычные мебель/сантехника/электрикаМНЧ сохраняют OWNER-MNC-FREE-CALLOUT-20261021без отдельной платной диагностики. Новая цена не подтверждает разрешение услуги, передачуМНЧ→БТ/согласование, территорию/приезд, запчасти/материалы, фиксированную цену ремонта или результат. Старую человеческую озвучку500сохранять для аудита, но не принимать за сегодняшний тарифБТ.",
+      "supersedes_in_scope": [
+        "DOC-L0743",
+        "DOC-L0759",
+        "DOC-L0760",
+        "OWNER-DIAGNOSTIC-ONLY-MIN-20261020"
+      ],
+      "evidence": "Прямое сообщение владельца27октября2026; docs/owner-rules-2026-10-27.md; latest-turn212/expectations-before-code223-bt800.json"
+    }
+  ],
+  "channel_routes": {
+    "provenance": {
+      "source": "owner-provided ext/sources.txt",
+      "date": "2026-10-13",
+      "sha256": "b59659bf4f9e008025a5d8ab14ea85cfcb26522ab77fb6354ccdb2c83570da2c",
+      "scope": "Only missing profiles on Avito; exact source and partner match; no ambiguous sources"
+    },
+    "items": [
+      {
+        "source": "М17",
+        "partner": "7",
+        "direction": "kp"
+      },
+      {
+        "source": "М15",
+        "partner": "7",
+        "direction": "bt"
+      },
+      {
+        "source": "С85",
+        "partner": "7",
+        "direction": "mnc"
+      },
+      {
+        "source": "М19",
+        "partner": "723",
+        "direction": "kp"
+      },
+      {
+        "source": "Б9",
+        "partner": "723",
+        "direction": "kp"
+      },
+      {
+        "source": "М18",
+        "partner": "7",
+        "direction": "bt"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),{create}=require('../ext/assistant-runner');
+function fixture(extra={}){
+ const calls=[],timers=new Map();let next=0,now=100,active=true;
+ const deps={visible:()=>true,active:()=>active,now:()=>now,schedule:(fn,delay)=>{timers.set(++next,{fn,delay});return next},clear:id=>timers.delete(id),stopWorkflow:()=>calls.push('fence'),
+ setMode:async mode=>{calls.push('mode:'+mode);return{ok:true,auto_enabled:mode==='auto'}},scan:async()=>[{id:'free',eligible:true},{id:'approval',eligible:false},{id:'mine',eligible:true}],
+ inspect:async id=>{calls.push('inspect:'+id);return{step:'claim',reply:'Марку и модель подскажите?'}},step:async id=>{calls.push('write:'+id);return{step:'done',id:'1234567'}},log:async data=>calls.push(data),...extra};
+ return{ui:create(deps),calls,timers,deps,time:v=>now=v,active:v=>active=v};
+}
+test('benign system message does not schedule a client-turn wake; ownership events still do',async()=>{
+ const f=fixture();await f.ui.start('review');
+ for(const from of ['system','avito','bot'])f.ui.wake({t:'message:new',id:'chat',from});
+ assert.equal([...f.timers.values()][0].delay,5000);
+ f.ui.wake({t:'conversation:updated',id:'chat'});assert.equal([...f.timers.values()][0].delay,800);f.ui.stop();
+});
+test('idle never scans; rehearsal produces exact plans without any transport',async()=>{const f=fixture();assert.deepEqual(f.calls,[]);await f.ui.tick();assert.deepEqual(f.calls,[]);await f.ui.start('review');assert.deepEqual(f.calls.filter(x=>typeof x==='string'),['fence','mode:review','inspect:free','inspect:mine']);assert.equal(f.ui.state.rows[0].reply,'Марку и модель подскажите?');assert.equal(f.ui.state.rows[0].executed,false);f.ui.stop()});
+test('explicit server-confirmed auto only; skipped work never reaches executor',async()=>{const f=fixture();await f.ui.start('auto');assert.deepEqual(f.calls.filter(x=>typeof x==='string'),['fence','mode:auto','write:free','write:mine']);assert.equal(f.ui.state.rows[0].id,'free');assert.equal(f.ui.state.rows[0].crm_id,'1234567');f.ui.stop()});
+test('server denial cannot enable local auto or scan',async()=>{const f=fixture({setMode:async()=>({ok:true,auto_enabled:false})});await assert.rejects(f.ui.start('auto'),/подтверждён/);assert.equal(f.ui.state.mode,'stopped');assert.ok(!f.calls.some(x=>typeof x==='string'&&x.startsWith('write')))});
+test('stop during queue read fences every late action and next timer',async()=>{let release;const f=fixture({scan:()=>new Promise(r=>release=r)});const run=f.ui.start('auto');await new Promise(r=>setImmediate(r));f.ui.stop();release([{id:'free',eligible:true}]);await run;assert.equal(f.ui.state.mode,'stopped');assert.deepEqual([...f.timers],[]);assert.ok(!f.calls.includes('write:free'))});
+test('realtime bursts debounce and have a bounded fallback; cycles never overlap',async()=>{const f=fixture();await f.ui.start('review');assert.equal([...f.timers.values()][0].delay,5000);f.ui.wake({t:'rt:route'});assert.equal([...f.timers.values()][0].delay,5000);f.ui.wake({t:'message:created'});assert.equal(f.timers.size,1);assert.equal([...f.timers.values()][0].delay,800);f.time(2800);f.ui.wake({t:'message:created'});assert.equal([...f.timers.values()][0].delay,0);f.ui.stop()});
+test('per-dialog failure is handed off; queue failure stops auto and resets server mode',async()=>{const f=fixture({step:async()=>{throw Error('Неизвестный результат')}});await f.ui.start('auto');assert.equal(f.ui.state.rows[0].step,'handoff');f.deps.scan=async()=>{throw Error('Нет очереди')};await f.ui.tick();assert.equal(f.ui.state.mode,'stopped');assert.ok(f.calls.includes('mode:review'))});
+test('only twelve eligible dialogs enter one cycle, with bounded parallel workers',async()=>{let concurrent=0,max=0;const f=fixture({scan:async()=>Array.from({length:30},(_,i)=>({id:String(i),eligible:true})),step:async()=>{max=Math.max(max,++concurrent);await new Promise(r=>setImmediate(r));concurrent--;return{step:'wait'}}});await f.ui.start('auto');assert.equal(f.ui.state.rows.length,12);assert.equal(max,4);f.ui.stop()});
+test('real LeadChat event IDs are prioritized and foreign owner events do not wake the helper',async()=>{const seen=[];const f=fixture({operator:()=> 'george',scan:async ids=>{seen.push(ids);return[]}});await f.ui.start('review');f.ui.wake({t:'message:new',id:'chat',owner:'colleague'});assert.equal([...f.timers.values()][0].delay,5000);f.ui.wake({t:'message:new',id:'chat',owner:'george'});f.ui.wake({t:'message:transcript',id:'chat'});await f.ui.tick();assert.deepEqual(seen.at(-1),['chat']);f.ui.stop()});

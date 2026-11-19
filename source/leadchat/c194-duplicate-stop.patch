@@ -1,0 +1,229 @@
+--- a/backend/app/api/routes/assistant_office.py
++++ b/backend/app/api/routes/assistant_office.py
+@@ -31,6 +31,10 @@
+ class WorkRequest(ExecutorRequest):
+     work_id: str = Field(pattern=r"^[a-f0-9]{64}$")
+     lease_id: uuid.UUID
++
++
++class FailureRequest(WorkRequest):
++    stop_reason: Literal["crm_existing_request"] | None = None
+ 
+ 
+ class PrepareRequest(WorkRequest):
+@@ -197,12 +201,12 @@
+ 
+ @router.post("/failed")
+ async def failed(
+-    body: WorkRequest,
+-    user: User = Depends(manage),
+-    db: AsyncSession = Depends(get_db),
+-    service: NativeOffice = Depends(office_service),
+-):
+-    return await _invoke(service, db, user, body, service.fail, evidence=True)
++    body: FailureRequest,
++    user: User = Depends(manage),
++    db: AsyncSession = Depends(get_db),
++    service: NativeOffice = Depends(office_service),
++):
++    return await _invoke(service, db, user, body, service.fail, body.stop_reason, evidence=True)
+ 
+ 
+ @router.post("/status")
+--- a/backend/app/services/assistant_office.py
++++ b/backend/app/services/assistant_office.py
+@@ -456,9 +456,7 @@
+         ):
+             raise ValueError("Immutable original form and read-only screen required")
+         form, plan = _object(research.result), _object(screen.result)
+-        if form.get("completion_mode", "telegram") != (
+-            "crm_only" if self.crm_only else "telegram"
+-        ):
++        if form.get("completion_mode", "telegram") != ("crm_only" if self.crm_only else "telegram"):
+             raise ValueError("Root form mode differs from trusted Main completion policy")
+         fields = plan.get("crm_required_fields")
+         if (
+@@ -585,6 +583,7 @@
+             work.client_lease_until = min(work.deadline, self._now() + TTL)
+             await db.commit()
+             return _view(work) | {
++                "supports_duplicate_stop": True,
+                 "lease_id": str(work.client_lease_id),
+                 "lease_until": work.client_lease_until,
+                 "source_sha256": work.source_hash,
+@@ -849,15 +848,19 @@
+             return result | {"duplicate_found": False}
+         return result
+ 
+-    async def fail(self, live, key, executor, lease):
++    async def fail(self, live, key, executor, lease, stop_reason=None):
+         async with self.sessions() as db:
+             work, resource = await self._own(db, live, key, current=False)
+             if work.executor_id != executor or work.client_lease_id != lease:
+                 raise ValueError("Original executor required")
+             if work.stage in ("waiting_notification", "completed"):
+                 return _view(work)
++            if work.stage == "stopped" and work.create_issued_at is None:
++                return _view(work) | {"reason_code": work.reason_code}
++            event = "executor_stopped"
+             if work.create_issued_at is not None:
+                 work.stage, work.reason_code = "created_review", "create_result_unknown"
++                event = "executor_result_unknown"
+                 if work.created_id is None:
+                     await assistant_runs.block(db, live, "native_delivery")
+                 else:
+@@ -870,14 +873,21 @@
+                     else:
+                         await assistant_runs.block(db, live, "native_delivery")
+             else:
+-                work.stage, work.reason_code = "stopped", "executor_stopped_before_create"
++                if (
++                    stop_reason == "crm_existing_request"
++                    and work.stage == "office_reserved"
++                    and resource.work_key == key
++                ):
++                    work.reason_code = stop_reason
++                    event = "duplicate_found_before_create"
++                else:
++                    work.reason_code = "executor_stopped_before_create"
++                work.stage = "stopped"
+                 if resource.work_key == key:
+                     resource.work_key = None
+-            await self._event(
+-                db, work, "executor_result_unknown" if work.create_issued_at else "executor_stopped"
+-            )
++            await self._event(db, work, event)
+             await db.commit()
+-            return _view(work)
++            return _view(work) | {"reason_code": work.reason_code}
+ 
+     async def advance(self, key):
+         if not self.enabled or self.actions is None:
+--- a/backend/app/services/assistant_dialogs.py
++++ b/backend/app/services/assistant_dialogs.py
+@@ -9,11 +9,19 @@
+ from datetime import UTC, datetime
+ from typing import Any
+ 
+-from sqlalchemy import func, select
++from sqlalchemy import case, func, select
+ from sqlalchemy.ext.asyncio import AsyncSession
+ 
+ from app.core.errors import ApiError
+-from app.models import AssistantDialog, AvitoAccount, Client, Conversation, Message, User
++from app.models import (
++    AssistantDialog,
++    AssistantOfficeWork,
++    AvitoAccount,
++    Client,
++    Conversation,
++    Message,
++    User,
++)
+ from app.services import account_operators, assistant_identity, conversations, inbox
+ from app.services.audit import write_audit
+ 
+@@ -337,9 +345,39 @@
+     )
+     latest_id = latest.with_only_columns(Message.id).scalar_subquery()
+     latest_created = latest.with_only_columns(Message.created_at).scalar_subquery()
++    work = AssistantOfficeWork
++    crm_stop_reason = (
++        select(
++            case(
++                (
++                    (work.stage == "stopped")
++                    & work.create_issued_at.is_(None)
++                    & (work.reason_code == "crm_existing_request"),
++                    work.reason_code,
++                ),
++            )
++        )
++        .where(
++            work.conversation_id == AssistantDialog.conversation_id,
++            work.principal_id == AssistantDialog.principal_id,
++            work.operator_id == AssistantDialog.operator_id,
++            work.dialog_version == AssistantDialog.version,
++        )
++        .order_by(work.generation.desc(), work.deadline.desc(), work.key)
++        .limit(1)
++        .correlate(AssistantDialog)
++        .scalar_subquery()
++    )
+     rows = (
+         await db.execute(
+-            select(AssistantDialog, Conversation, Client.name, AvitoAccount.title, Message)
++            select(
++                AssistantDialog,
++                Conversation,
++                Client.name,
++                AvitoAccount.title,
++                Message,
++                case((active, crm_stop_reason)),
++            )
+             .select_from(AssistantDialog)
+             .join(Conversation)
+             .join(Client, Client.id == Conversation.client_id)
+@@ -357,7 +395,7 @@
+         )
+     ).all()
+     items = []
+-    for job, conv, name, account, message in rows[:limit]:
++    for job, conv, name, account, message, stop_reason in rows[:limit]:
+         preview = (
+             None
+             if message is None
+@@ -384,6 +422,7 @@
+                 "client_name": name,
+                 "account_title": account,
+                 "preview": preview,
++                "crm_stop_reason": stop_reason,
+             }
+         )
+     return {
+--- a/frontend-classic/src/features/bot-dialogs/NativeDialogQueue.tsx
++++ b/frontend-classic/src/features/bot-dialogs/NativeDialogQueue.tsx
+@@ -15,6 +15,7 @@
+   id: string; principal_id: string; operator_id: string; state: string;
+   client_name?: string | null; account_title?: string | null;
+   preview?: Preview | null; observation?: Observation | null;
++  crm_stop_reason?: string | null;
+ }
+ interface Page { items: Row[]; total: number; more: boolean; next_offset: number; view: string }
+ const UUID = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+@@ -122,7 +123,11 @@
+               </div>
+               <Text size="xs" className="native-queue__state">{records[row.state]}</Text>
+               <blockquote><small>{preview.who}</small><Private kind="text">{preview.text}</Private></blockquote>
+-              <Text size="sm">{!query.isError && stage ? `Последний этап: ${stages[stage.stage]}` : "Текущий этап не подтверждён"}</Text>
++              <Text size="sm">{!query.isError && row.crm_stop_reason === "crm_existing_request"
++                ? "CRM нашла открытую заявку. Создание остановлено."
++                : !query.isError && stage
++                  ? `Последний этап: ${stages[stage.stage]}`
++                  : "Текущий этап не подтверждён"}</Text>
+               {!query.isError && stage && <Text size="xs" c="dimmed">Наблюдение: {new Date(stage.observed_at * 1000).toLocaleTimeString("ru-RU")}</Text>}
+               <Link className="native-queue__open" to={`/chats/${row.id}`}>Открыть диалог</Link>
+             </li>;
+--- a/frontend-new/src/features/bot-dialogs/NativeDialogQueue.tsx
++++ b/frontend-new/src/features/bot-dialogs/NativeDialogQueue.tsx
+@@ -15,6 +15,7 @@
+   id: string; principal_id: string; operator_id: string; state: string;
+   client_name?: string | null; account_title?: string | null;
+   preview?: Preview | null; observation?: Observation | null;
++  crm_stop_reason?: string | null;
+ }
+ interface Page { items: Row[]; total: number; more: boolean; next_offset: number; view: string }
+ const UUID = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+@@ -122,7 +123,11 @@
+               </div>
+               <Text size="xs" className="native-queue__state">{records[row.state]}</Text>
+               <blockquote><small>{preview.who}</small><Private kind="text">{preview.text}</Private></blockquote>
+-              <Text size="sm">{!query.isError && stage ? `Последний этап: ${stages[stage.stage]}` : "Текущий этап не подтверждён"}</Text>
++              <Text size="sm">{!query.isError && row.crm_stop_reason === "crm_existing_request"
++                ? "CRM нашла открытую заявку. Создание остановлено."
++                : !query.isError && stage
++                  ? `Последний этап: ${stages[stage.stage]}`
++                  : "Текущий этап не подтверждён"}</Text>
+               {!query.isError && stage && <Text size="xs" c="dimmed">Наблюдение: {new Date(stage.observed_at * 1000).toLocaleTimeString("ru-RU")}</Text>}
+               <Link className="native-queue__open" to={`/chats/${row.id}`}>Открыть диалог</Link>
+             </li>;

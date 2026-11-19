@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('fs'),cp=require('child_process'),crypto=require('crypto');
+const pid=cp.execFileSync('systemctl',['show','-p','MainPID','--value','lc-brain'],{encoding:'utf8'}).trim();
+const env=Object.fromEntries(fs.readFileSync('/proc/'+pid+'/environ','utf8').split('\0').filter(Boolean).map(x=>[x.slice(0,x.indexOf('=')),x.slice(x.indexOf('=')+1)]));
+if(!env.LEADBOT_SERVICE_TOKEN)throw Error('Brain service lacks the internal token');
+const token='synthetic-personal-token-for-release-smoke';
+const memory=new Map([['brain/tokens.json',{tokens:[{id:'smoke',label:'synthetic',sha:crypto.createHash('sha256').update(token).digest('hex')}]}]]);
+const store={get:async(k,d)=>structuredClone(memory.has(k)?memory.get(k):d),put:async(k,v)=>memory.set(k,structuredClone(v))};
+const handler=require('/opt/lead-centre/brain/dist/index.js').создать({env,store,log:()=>{},sleep:async()=>{}});
+(async()=>{const event={httpMethod:'POST',headers:{'x-brain-auth':token},body:JSON.stringify({op:'assistant',args:{action:'status'}}),requestContext:{identity:{sourceIp:'127.0.0.1'}}};const r=await handler(event);const b=JSON.parse(r.body);if(r.statusCode!==200||!b.ok||b.auto_enabled!==false||require('/opt/lead-centre/brain/dist/index.js').ВЕРСИЯ!=='2.1.0')throw Error('Compiled entry smoke failed');console.log(JSON.stringify({compiled_authenticated_entry:'passed',v:require('/opt/lead-centre/brain/dist/index.js').ВЕРСИЯ,auto_enabled:b.auto_enabled,policy_version:b.policy_version,model_task_exposed:!!b.model_task}));})().catch(e=>{console.log(JSON.stringify({error:e.message}));process.exitCode=1});

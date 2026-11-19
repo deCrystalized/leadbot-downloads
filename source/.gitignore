@@ -1,0 +1,11 @@
+config.json
+.env
+.env.*
+!/.env.example
+*.sqlite*
+*.db
+*.log
+__pycache__/
+node_modules/
+/data/
+/leadbot/data/

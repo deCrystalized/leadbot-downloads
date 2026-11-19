@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Мозг лид-центра</title>
+<style>
+  :root { --bg: #f6f7f9; --card: #fff; --text: #1d2330; --mut: #6b7385; --line: #e3e6ec; --acc: #2f6fed; --ok: #1f9d55; --warn: #c27c0e; --bad: #d64545; --chip: #eef1f6; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #14171d; --card: #1d2129; --text: #e6e9ef; --mut: #98a0b3; --line: #2c323d; --acc: #6b9bff; --ok: #4cc38a; --warn: #e3a64a; --bad: #ef6b6b; --chip: #262b35; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 4px 0 16px; }
+  h2 { font-size: 16px; margin: 0 0 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .mut { color: var(--mut); font-size: 13px; }
+  input, select, button { font: inherit; border-radius: 8px; border: 1px solid var(--line); padding: 7px 10px; background: var(--card); color: var(--text); }
+  input { min-width: 0; }
+  button { cursor: pointer; background: var(--acc); color: #fff; border-color: var(--acc); }
+  button.sec { background: var(--chip); color: var(--text); border-color: var(--line); }
+  button.bad { background: transparent; color: var(--bad); border-color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mut); font-weight: 500; font-size: 13px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .scroll { overflow-x: auto; }
+  .big { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bar { height: 8px; background: var(--chip); border-radius: 4px; overflow: hidden; margin: 8px 0 4px; }
+  .bar > i { display: block; height: 100%; background: var(--ok); }
+  .bar.economy > i { background: var(--warn); } .bar.rules > i { background: var(--bad); }
+  .chip { display: inline-block; padding: 2px 8px; border-radius: 10px; background: var(--chip); font-size: 13px; }
+  .chip.normal { color: var(--ok); } .chip.economy { color: var(--warn); } .chip.rules { color: var(--bad); }
+  .token { font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; background: var(--chip); padding: 10px; border-radius: 8px; margin: 8px 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .err { color: var(--bad); margin-top: 8px; }
+  .days { display: flex; align-items: flex-end; gap: 2px; height: 70px; margin-top: 8px; }
+  .days > i { flex: 1; background: var(--acc); min-height: 1px; border-radius: 2px 2px 0 0; opacity: .8; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Мозг лид-центра <span class="mut" id="ver"></span></h1>
+
+  <section class="card" id="login">
+    <h2>Вход владельца</h2>
+    <form class="row" id="loginForm">
+      <input type="text" id="pw" placeholder="Пароль администратора" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1 1 220px;-webkit-text-security:disc">
+      <button type="submit">Войти</button>
+    </form>
+    <div class="err" id="loginErr"></div>
+    <div class="mut hidden" id="sharedWarn" style="margin-top:8px">Страница открыта на общем адресе Yandex Cloud. Открывайте её только своей закладкой, не по ссылкам из писем и чатов. Вход действует 20 минут и до закрытия страницы.</div>
+  </section>
+
+  <div id="app" class="hidden">
+    <div class="grid">
+      <section class="card">
+        <h2>Расход за месяц <span class="mut" id="month"></span></h2>
+        <div class="big" id="spent">—</div>
+        <div class="bar" id="bar"><i style="width:0"></i></div>
+        <div class="mut" id="limitText"></div>
+        <div class="days" id="days" title="по дням"></div>
+      </section>
+      <section class="card">
+        <h2>Режим ИИ</h2>
+        <div class="row"><span class="chip" id="modeChip">—</span><span class="mut" id="modeWhy"></span></div>
+        <div class="row" style="margin-top:10px">
+          <select id="modeSel">
+            <option value="auto">Авто (по расходу)</option>
+            <option value="normal">Обычный</option>
+            <option value="economy">Экономный</option>
+            <option value="rules">ИИ выключен (правила)</option>
+          </select>
+          <button class="sec" id="modeBtn">Применить</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <input type="number" id="limitIn" min="100" max="5000" step="100" placeholder="Лимит, ₽" style="width:130px">
+          <button class="sec" id="limitBtn">Задать лимит</button>
+        </div>
+        <div class="mut" style="margin-top:6px">Ручной режим действует до конца месяца. При 100% лимита ИИ выключается в любом режиме — «Обычный» лимит не снимает.</div>
+        <div class="mut" style="margin-top:6px">Лимит — на всё (расширение + AHK); на ИИ — лимит минус постоянное. Пусто — 5000 ₽. Больше 5000 ₽ задать нельзя (жёсткий потолок) — только меньше.</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Личные токены</h2>
+      <form class="row" id="issueForm">
+        <input id="labelIn" placeholder="Метка устройства, например «ноутбук»" maxlength="40" style="flex:1 1 220px">
+        <button type="submit">Новый токен</button>
+      </form>
+      <div id="newToken" class="hidden">
+        <div class="mut">Токен показывается один раз. Вставьте его в настройки расширения и в ai_keys.txt помощника (brain_token).</div>
+        <div class="token" id="tokenText"></div>
+        <button class="sec" id="copyBtn" type="button">Копировать</button>
+      </div>
+      <div class="scroll"><table id="tokens"><thead><tr><th>Метка</th><th>Выпущен</th><th>Состояние</th><th></th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <section class="card">
+      <h2>Где работали токены</h2>
+      <div class="mut">Все адреса и устройства каждого токена. Незнакомый адрес или устройство — отзовите этот токен.</div>
+      <div class="scroll"><table id="seen"><thead><tr><th>Токен</th><th>IP</th><th>Устройство</th><th>Впервые</th><th>Последний раз</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <section class="card">
+      <h2>Последние входы</h2>
+      <div class="scroll"><table id="logins"><thead><tr><th>Время</th><th>Кто</th><th>IP</th><th>Устройство</th></tr></thead><tbody></tbody></table></div>
+      <div class="mut" id="fails" style="margin-top:8px"></div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>По моделям</h2>
+        <div class="scroll"><table id="models"><thead><tr><th>Модель</th><th class="num">Запросов</th><th class="num">Токенов</th><th class="num">₽</th></tr></thead><tbody></tbody></table></div>
+      </section>
+      <section class="card">
+        <h2>По операциям</h2>
+        <div class="scroll"><table id="ops"><thead><tr><th>Операция</th><th class="num">ИИ</th><th class="num">Из кэша</th><th class="num">₽</th></tr></thead><tbody></tbody></table></div>
+      </section>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Пакет GigaChat за год</h2>
+        <div class="scroll"><table id="packages"><thead><tr><th>Модель</th><th class="num">Осталось</th><th>Статус</th></tr></thead><tbody></tbody></table></div>
+      </section>
+      <section class="card">
+        <h2>Настройка</h2>
+        <div id="setup" class="mut"></div>
+        <h2 style="margin-top:12px">События</h2>
+        <div id="events" class="mut"></div>
+      </section>
+    </div>
+    <div class="row"><button class="sec" id="refresh">Обновить</button><span class="mut" id="status"></span></div>
+  </div>
+</main>
+<script>
+(function () {
+  'use strict';
+  // пропуск — только в памяти страницы (не в хранилищах браузера: у страницы в песочнице их и нет);
+  // закрыли или обновили страницу — пароль снова
+  var session = '';
+  var URL0 = location.protocol + '//' + location.host + location.pathname;
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return (Math.round(n * 100) / 100).toLocaleString('ru-RU'); };
+  var dt = function (t) { return t ? new Date(t).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—'; };
+  var MODES = { normal: 'обычный', economy: 'экономный', rules: 'ИИ выключен' };
+  function el(tag, text, cls) { var e = document.createElement(tag); if (text != null) e.textContent = text; if (cls) e.className = cls; return e; }
+  function row(tbody, cells) {
+    var tr = document.createElement('tr');
+    cells.forEach(function (c) { var td = typeof c === 'object' && c && c.nodeType ? (function () { var t = document.createElement('td'); t.appendChild(c); return t; })() : el('td', String(c)); if (typeof c === 'number') td.className = 'num'; tr.appendChild(td); });
+    tbody.appendChild(tr);
+  }
+  // «простой» запрос (text/plain, пропуск в теле): страница в песочнице, предзапрос CORS не нужен
+  function api(args) {
+    var a = {}; for (var k in args) a[k] = args[k];
+    if (session && a.action !== 'login') a.session = session;
+    return fetch(URL0, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ op: 'admin', args: a }), cache: 'no-store', credentials: 'omit' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.code === 'session') { session = ''; $('app').classList.add('hidden'); $('login').classList.remove('hidden'); } return d; });
+  }
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    $('loginErr').textContent = '';
+    api({ action: 'login', password: $('pw').value }).then(function (d) {
+      $('pw').value = '';
+      if (!d.ok) { $('loginErr').textContent = d.error || 'не получилось'; return; }
+      session = d.session;
+      $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+      load();
+    }).catch(function () { $('loginErr').textContent = 'нет связи'; });
+  });
+  function load() {
+    $('status').textContent = 'загрузка…';
+    return api({ action: 'overview' }).then(function (d) {
+      if (!d.ok) { $('status').textContent = d.error || 'ошибка'; return; }
+      $('status').textContent = 'обновлено ' + new Date().toLocaleTimeString('ru-RU');
+      $('ver').textContent = d.v || '';
+      var b = d.budget;
+      $('month').textContent = b.month;
+      $('spent').textContent = fmt(b.spent) + ' ₽';
+      var pct = Math.min(100, Math.round(b.ratio * 100));
+      $('bar').className = 'bar ' + b.mode; $('bar').firstChild.style.width = pct + '%';
+      $('limitText').textContent = pct + '% из ' + fmt(b.limit) + ' ₽ на ИИ (лимит ' + fmt(b.total) + ' ₽ − постоянное ' + fmt(b.fixed) + ' ₽)';
+      $('modeChip').textContent = MODES[b.mode] || b.mode; $('modeChip').className = 'chip ' + b.mode;
+      $('modeWhy').textContent = b.manual ? (b.auto === 'rules' && b.manual !== 'rules' ? 'лимит исчерпан — ИИ выключен до 1-го числа (ручной «' + (MODES[b.manual] || b.manual) + '» лимит не снимает)' : 'задан вручную до конца месяца (по расходу было бы: ' + (MODES[b.auto] || b.auto) + ')') : 'по расходу';
+      $('modeSel').value = b.manual || 'auto';
+      var days = d.summary.days, keys = Object.keys(days).sort(), max = 0;
+      keys.forEach(function (k) { max = Math.max(max, days[k].rub); });
+      var box = $('days'); box.textContent = '';
+      keys.forEach(function (k) { var i = el('i'); i.style.height = (max ? Math.max(2, days[k].rub / max * 70) : 2) + 'px'; i.title = k + ': ' + fmt(days[k].rub) + ' ₽, ' + days[k].req + ' запросов'; box.appendChild(i); });
+      var tb = $('tokens').tBodies[0]; tb.textContent = '';
+      d.tokens.slice().reverse().forEach(function (t) {
+        var act = el('span');
+        if (!t.revoked) {
+          var ren = el('button', 'Метка', 'sec'); ren.onclick = function () { var l = prompt('Новая метка устройства', t.label); if (l) api({ action: 'label', id: t.id, label: l }).then(load); };
+          var rev = el('button', 'Отозвать', 'bad'); rev.style.marginLeft = '6px';
+          rev.onclick = function () { if (confirm('Отозвать токен «' + t.label + '»? Устройство с ним перестанет работать.')) api({ action: 'revoke', id: t.id }).then(load); };
+          act.appendChild(ren); act.appendChild(rev);
+        }
+        row(tb, [t.label, dt(t.created), t.revoked ? 'отозван ' + dt(t.revoked) : 'действует', act]);
+      });
+      var lb = $('logins').tBodies[0]; lb.textContent = '';
+      d.logins.forEach(function (x) { row(lb, [dt(x.at), (x.bad ? '⚠ ' : '') + (x.label || x.id), x.ip || '—', x.dev || '—']); });
+      var names = {}; d.tokens.forEach(function (t) { names[t.id] = t.label + (t.revoked ? ' (отозван)' : ''); });
+      var sb = $('seen').tBodies[0]; sb.textContent = '';
+      Object.keys(d.seen || {}).forEach(function (id) {
+        (d.seen[id] || []).forEach(function (x) { row(sb, [(Date.now() - x.first < 7 * 864e5 ? '● новое · ' : '') + (names[id] || id), x.ip || '—', x.dev || '—', dt(x.first), dt(x.last)]); });
+      });
+      var f = d.fails || { day: 0, last: [] };
+      $('fails').textContent = f.day ? '⚠ Неверный пароль владельца за сутки: ' + f.day + ' (последний — ' + dt(f.last[0] && f.last[0].at) + ', IP ' + ((f.last[0] && f.last[0].ip) || '—') + ')' : 'Неверных паролей владельца за сутки нет.';
+      var mb = $('models').tBodies[0]; mb.textContent = '';
+      Object.keys(d.summary.models).forEach(function (m) { var x = d.summary.models[m]; row(mb, [m, x.req, x.in + x.out, x.rub]); });
+      var ob = $('ops').tBodies[0]; ob.textContent = '';
+      Object.keys(d.summary.ops).forEach(function (o) { var x = d.summary.ops[o]; row(ob, [o, x.req, x.hits, x.rub]); });
+      var pb = $('packages').tBodies[0]; pb.textContent = '';
+      Object.keys(d.summary.packages).forEach(function (m) { var p = d.summary.packages[m]; row(pb, [m, Math.round(p.left / 1e6 * 10) / 10 + ' млн из ' + p.total / 1e6, p.free ? 'бесплатно' : p.exhausted ? 'исчерпан (402)' : 'платно / пропускаем']); });
+      var s = d.setup, list = [['GigaChat', s.gigachat], ['YandexGPT (каталог)', s.yandex], ['Геокодер', s.geocoder], ['DaData', s.dadata], ['Геосаджест', s.suggest], ['Сервер команды', s.team]];
+      $('setup').textContent = list.map(function (x) { return (x[1] ? '✓ ' : '✗ ') + x[0]; }).join(' · ') + (s.gigaPaid ? ' · платные GigaChat: ' + s.gigaPaid : '');
+      var ev = $('events'); ev.textContent = '';
+      (d.events || []).slice(0, 10).forEach(function (x) { ev.appendChild(el('div', dt(x.at) + ' — ' + x.text)); });
+      if (!(d.events || []).length) ev.textContent = 'нет';
+    }).catch(function () { $('status').textContent = 'нет связи'; });
+  }
+  $('issueForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    api({ action: 'issue', label: $('labelIn').value || 'устройство' }).then(function (d) {
+      if (!d.ok) return;
+      $('labelIn').value = '';
+      $('tokenText').textContent = d.token; $('newToken').classList.remove('hidden');
+      load();
+    });
+  });
+  $('copyBtn').addEventListener('click', function () {
+    var t = $('tokenText').textContent;
+    var выделить = function () { var r = document.createRange(); r.selectNodeContents($('tokenText')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $('copyBtn').textContent = 'Выделено — нажмите Ctrl+C'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { $('copyBtn').textContent = 'Скопировано'; }, выделить);
+    else выделить();
+  });
+  $('modeBtn').addEventListener('click', function () { api({ action: 'mode', mode: $('modeSel').value }).then(load); });
+  $('limitBtn').addEventListener('click', function () { api({ action: 'limit', rub: $('limitIn').value }).then(load); });
+  $('refresh').addEventListener('click', load);
+  // общий адрес functions.yandexcloud.net: менеджер паролей браузера сохраняет пароль на ВЕСЬ адрес (не на путь) и
+  // предложил бы его на странице любой чужой функции — поле без сохранения (текст со звёздочками). На своём адресе
+  // (ADMIN_HOST, API Gateway) — обычное поле пароля
+  if (location.host === 'functions.yandexcloud.net') $('sharedWarn').classList.remove('hidden');
+  else { $('pw').type = 'password'; $('pw').setAttribute('autocomplete', 'current-password'); $('pw').style.webkitTextSecurity = ''; }
+})();
+</script>
+</body>
+</html>

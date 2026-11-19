@@ -1,0 +1,72 @@
+--- a/src/features/bot-dialogs/NativeAssistantPanel.tsx
++++ b/src/features/bot-dialogs/NativeAssistantPanel.tsx
+@@ -118,7 +118,7 @@
+       <div className="native-assistant__head">
+         <div>
+           <h2>LeadBot в LeadChat</h2>
+-          <p>Работает на сервере. Панель можно закрыть.</p>
++          <p>Для оформления в CRM оставьте открытой обычную вкладку «Чаты» с расширением.</p>
+         </div>
+         <Text role="status" className="native-assistant__status" data-working={confirmed && working || undefined}>{title}</Text>
+       </div>
+--- a/src/features/settings/leadbot/LeadbotTab.tsx
++++ b/src/features/settings/leadbot/LeadbotTab.tsx
+@@ -3,6 +3,7 @@
+ import { Button, Checkbox, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+ 
+ import { Link } from "react-router-dom";
++import { NativeAssistantPanel } from "@/features/bot-dialogs/NativeAssistantPanel";
+ import { ApiError } from "@/shared/api/http";
+ import { выбралСам } from "@/features/chats/выборДиалога";
+ import { PageHeader } from "@/shared/ui/PageHeader";
+@@ -963,6 +964,8 @@
+         </Text>
+       )}
+ 
++      <NativeAssistantPanel />
++
+       <StateHeader onlyTrouble={onlyTrouble} setOnlyTrouble={setOnlyTrouble} />
+ 
+       <div className="lb-cols">
+--- a/src/test/NativeAssistantPanel0211.test.tsx
++++ b/src/test/NativeAssistantPanel0211.test.tsx
+@@ -2,6 +2,7 @@
+ import userEvent from "@testing-library/user-event";
+ import { afterEach, beforeEach, expect, it, vi } from "vitest";
+ import { NativeAssistantPanel } from "@/features/bot-dialogs/NativeAssistantPanel";
++import { LeadbotTab } from "@/features/settings/leadbot/LeadbotTab";
+ import { useSessionStore } from "@/shared/stores/sessionStore";
+ import { fakeUser, resetSessionStore } from "./helpers";
+ import { renderWithProviders } from "./render";
+@@ -38,6 +39,12 @@
+     const body = init?.body ? JSON.parse(String(init.body)) : null;
+     requests.push({ path, method, body });
+     const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
++    if (path === "/leadbot" && method === "GET") return json({
++      connection: { url: "", token_set: false, source: "env" },
++      is_ready: false, enabled: false, mode: "suggest", context_messages: 30,
++      account_ids: [], accounts: [],
++    });
++    if (path.startsWith("/leadbot/") && method === "GET") return json({ items: [], in_progress: [], silent: [] });
+     if (path === "/auth/me") return json({ id: useSessionStore.getState().user?.id, role: "admin" });
+     if (path.endsWith("/capabilities")) return json({ principal: { id: capabilitiesOwner }, authors: [
+       { id: owner, full_name: "Анна" }, { id: author, full_name: "Анна" },
+@@ -211,3 +218,18 @@
+   await act(async () => resolve(new Response(JSON.stringify(running()), { status: 200 })));
+   expect(mutations()).toEqual([]);
+ });
++
++it("starts and stops the same native Run from the built-in LeadBot settings page", async () => {
++  renderWithProviders(<LeadbotTab />, { route: "/settings/leadbot" });
++  await screen.findByRole("region", { name: "Серверный LeadBot" });
++  await waitFor(() => expect(screen.getByRole("button", { name: "Подготовить запуск" })).toBeEnabled());
++  expect(mutations()).toEqual([]);
++  await userEvent.click(screen.getByRole("button", { name: "Подготовить запуск" }));
++  await userEvent.click(screen.getByRole("button", { name: "Подтверждаю запуск авто" }));
++  await screen.findByText("Бот работает на сервере");
++  await userEvent.click(screen.getByRole("button", { name: "Остановить запуск" }));
++  await screen.findByText("Серверный бот остановлен");
++  expect(mutations().map(({path, method}) => [method, path])).toEqual([
++    ["POST", nativePath + "/start"], ["POST", nativePath + "/stop"],
++  ]);
++});

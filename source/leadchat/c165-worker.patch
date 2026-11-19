@@ -1,0 +1,86 @@
+--- a/app/services/assistant_driver.py
++++ b/app/services/assistant_driver.py
+@@ -181,6 +181,29 @@
+             await self._block(live, code)
+             return {"cid": str(cid), "state": "technical_stop", "reason_code": code}
+         return {"cid": str(cid), "state": "source_changed"}
++
++    async def _handoff_if_current(self, live, cid, source, reason):
++        if await self._snapshot(live, cid) != source:
++            return {"cid": str(cid), "state": "source_changed"}
++        async with self.sessions() as db:
++            # Serialize with start/stop before locking the affected conversation.
++            principal = await assistant_runs._principal(db, live.principal_id, lock=True)
++            await assistant_runs.authority(
++                db, live.principal_id, live.run_id, live.generation, self.admission
++            )
++            job = await db.get(AssistantDialog, cid)
++            if job is None:
++                return {"cid": str(cid), "state": "source_changed"}
++            await assistant_dialogs.locked_job(db, principal, cid, live.operator_id, job.version)
++            current = await leadbot_reader._snapshot(
++                db,
++                str(cid),
++                {"principal_id": str(live.principal_id), "operator_id": str(live.operator_id)},
++            )
++            if current is None or current[0]["source_sha256"] != source:
++                return {"cid": str(cid), "state": "source_changed"}
++            await assistant_dialogs.pause(db, principal, cid, live.operator_id, job.version)
++        return {"cid": str(cid), "state": "needs_operator", "reason": reason}
+ 
+     async def _quiet(self, cid):
+         async with self.sessions() as db:
+@@ -324,27 +347,7 @@
+         if step in ("wait", "paused"):
+             return {"cid": str(cid), "state": "wait", "reason": planned.get("reason", "")}
+         if step == "handoff":
+-            # A source-bound business handoff, never a transport-error catch.
+-            if await self._snapshot(live, cid) != source:
+-                return {"cid": str(cid), "state": "source_changed"}
+-            async with self.sessions() as db:
+-                await assistant_runs.authority(
+-                    db, live.principal_id, live.run_id, live.generation, self.admission
+-                )
+-                principal = await db.get(User, live.principal_id)
+-                job = await db.get(AssistantDialog, cid)
+-                await assistant_dialogs.locked_job(
+-                    db, principal, cid, live.operator_id, job.version
+-                )
+-                current = await leadbot_reader._snapshot(
+-                    db,
+-                    str(cid),
+-                    {"principal_id": str(live.principal_id), "operator_id": str(live.operator_id)},
+-                )
+-                if current is None or current[0]["source_sha256"] != source:
+-                    return {"cid": str(cid), "state": "source_changed"}
+-                await assistant_dialogs.pause(db, principal, cid, live.operator_id, job.version)
+-            return {"cid": str(cid), "state": "needs_operator", "reason": planned.get("reason", "")}
++            return await self._handoff_if_current(live, cid, source, planned.get("reason", ""))
+         if step == "inspect_media":
+             if row.research_key:
+                 return {"cid": str(cid), "state": "source_review", "needs_operator": True}
+@@ -380,6 +383,24 @@
+                         "needs_operator": True,
+                         "retry_started": False,
+                     }
++                if (
++                    purpose == "reply"
++                    and result.get("ok") is True
++                    and result.get("action") == "handoff"
++                    and result.get("needs_operator") is True
++                    and result.get("reply") == ""
++                    and result.get("draft_id")
++                    and result.get("response_source") == "model"
++                    and result.get("context_review_status") == "provided"
++                    and result.get("validation")
++                    == ["empty_or_long_reply", "model_context_mismatch"]
++                    and result.get("code") is None
++                    and result.get("execution_allowed") in (None, False)
++                    and result.get("can_send_or_create") in (None, False)
++                ):
++                    return await self._handoff_if_current(
++                        live, cid, source, "Ответ не прошёл проверку контекста"
++                    )
+             return await self._block_if_current(live, cid, source, "native_model")
+         if work["state"] != "ready":
+             return {

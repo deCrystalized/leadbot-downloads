@@ -1,0 +1,772 @@
+--- /dev/null
++++ b/src/features/bot-dialogs/NativeAssistantPanel.tsx
+@@ -0,0 +1,162 @@
++import { useEffect, useRef, useState } from "react";
++import { Button, Group, Select, Text } from "@mantine/core";
++import { http } from "@/shared/api/http";
++import { useSessionStore } from "@/shared/stores/sessionStore";
++import { createRun, type NativeRunController, type NativeRunState, type StartTicket } from "./nativeRunController";
++import { NativeDialogQueue } from "./NativeDialogQueue";
++import "./native-assistant.css";
++
++interface Author { id: string; full_name: string }
++interface Capabilities { principal: Author; authors: Author[] }
++interface PanelState {
++  principal: string;
++  run: NativeRunState;
++  authors: Author[];
++  authorsReady: boolean;
++}
++
++/** Observation owns only a poll. Only explicit buttons may change the SQL Run. */
++export function NativeAssistantPanel() {
++  const principal = useSessionStore((s) => s.user?.id ?? "");
++  const allowed = useSessionStore((s) => s.user?.role === "admin" && s.permissions.includes("bots:manage"));
++  const controller = useRef<NativeRunController | null>(null);
++  const refreshAuthors = useRef<() => Promise<void>>(async () => {});
++  const operator = useRef(principal);
++  const [selected, setSelected] = useState(principal);
++  const [panel, setPanel] = useState<PanelState | null>(null);
++  const [ticket, setTicket] = useState<StartTicket | null>(null);
++  const [error, setError] = useState("");
++
++  useEffect(() => {
++    if (!allowed) return;
++    let closed = false;
++    operator.current = principal;
++    setSelected(principal); setTicket(null); setError("");
++    let authors: Author[] = [], authorsReady = false;
++    const currentPrincipal = () => useSessionStore.getState().user?.id ?? "";
++    const publish = (run: NativeRunState) => {
++      if (!closed && currentPrincipal() === principal) {
++        if (!run.stale && !run.unknown && !run.error) setError("");
++        setPanel({ principal, run: { ...run, view: run.view ? { ...run.view } : null }, authors, authorsReady });
++      }
++    };
++    const run = createRun({
++      get: (path) => http.get(path), post: (path, body) => http.post(path, body),
++      identity: () => http.get("/auth/me"), principal: currentPrincipal,
++      operator: () => operator.current, onChange: publish,
++    });
++    controller.current = run;
++    publish(run.state);
++    const loadAuthors = async () => {
++      try {
++        const value = await http.get<Capabilities>("/bot-dialogs/assistant/capabilities");
++        if (closed || currentPrincipal() !== principal) return;
++        if (value?.principal?.id !== principal || !Array.isArray(value.authors)
++            || value.authors.some((a) => typeof a.id !== "string" || typeof a.full_name !== "string")) throw Error("Не подтверждён автор");
++        authors = value.authors; authorsReady = true; publish(run.state);
++      } catch {
++        if (!closed && currentPrincipal() === principal) { authorsReady = false; publish(run.state); }
++      }
++    };
++    refreshAuthors.current = loadAuthors;
++    void loadAuthors();
++    run.watch();
++    return () => {
++      closed = true; run.unwatch();
++      if (controller.current === run) controller.current = null;
++    };
++  }, [allowed, principal]);
++
++  if (!allowed) return null;
++  const state = panel?.principal === principal ? panel.run : null;
++  const view = state?.view?.principal_id === principal ? state.view : null;
++  const active = view?.state === "running";
++  const working = active && view.mode === "auto" && view.configured && view.worker_ready;
++  const confirmed = !!view && !state?.stale;
++  const authors = panel?.principal === principal ? panel.authors : [];
++  const chosen = active ? view.operator_id : selected;
++  const label = (author: Author) => {
++    const sameName = authors.filter((a) => a.full_name === author.full_name);
++    const prefix = author.id.slice(0, 8);
++    const distinctId = sameName.some((a) => a.id !== author.id && a.id.startsWith(prefix)) ? author.id : prefix;
++    return author.full_name + (sameName.length > 1 ? ` · ${distinctId}` : "")
++      + (author.id === principal ? " (вы)" : "");
++  };
++  const author = authors.find((a) => a.id === chosen);
++  const title = !view ? "Состояние сервера не подтверждено"
++    : state?.stale ? "Связь потеряна · показано последнее подтверждённое состояние"
++    : working ? "Бот работает на сервере"
++    : active ? view.mode === "auto" ? "Авто включено · работа обработчика не подтверждена" : "Серверный запуск без отправок"
++    : view.state === "blocked" ? "Запуск остановлен после ошибки" : "Серверный бот остановлен";
++  const canStart = confirmed && !active && !state?.busy && !state?.unknown
++    && view.start_available && panel?.authorsReady && !!author;
++  const confirmationCurrent = ticket?.principal_id === principal && confirmed && !active
++    && ticket.expected_generation === view.generation && ticket.operator_id === selected && view.start_available;
++  const run = controller.current;
++  const refresh = () => { void refreshAuthors.current(); void run?.inspect().catch(() => {}); };
++  const prepare = async () => {
++    setError(""); setTicket(null);
++    try {
++      const value = await run?.prepareStart();
++      if (value && controller.current === run && useSessionStore.getState().user?.id === principal) setTicket(value);
++    } catch { setError("Запуск не подготовлен. Проверьте состояние сервера и автора"); }
++  };
++  const start = async () => {
++    const confirmedTicket = ticket; setTicket(null); setError("");
++    if (!run || !confirmedTicket) return;
++    try { await run.start(confirmedTicket); }
++    catch { if (controller.current === run) setError("Запуск пока не подтверждён. Автоматического повтора не было"); }
++  };
++  const stop = async () => {
++    setTicket(null); setError("");
++    try { await run?.stop(); }
++    catch { if (controller.current === run) setError("Остановка пока не подтверждена. Автоматического повтора не было"); }
++  };
++
++  return (
++    <section className="lc-card native-assistant" aria-label="Серверный LeadBot">
++      <div className="native-assistant__head">
++        <div>
++          <h2>LeadBot в LeadChat</h2>
++          <p>Для оформления в CRM оставьте открытой обычную вкладку «Чаты» с расширением.</p>
++        </div>
++        <Text role="status" className="native-assistant__status" data-working={confirmed && working || undefined}>{title}</Text>
++      </div>
++      <div className="native-assistant__controls">
++        <Select label="От чьего имени отвечать" className="lc-field" value={chosen}
++          placeholder={active ? "Автор недоступен" : "Выберите сотрудника"}
++          data={authors.map((a) => ({ value: a.id, label: label(a) }))}
++          disabled={!confirmed || active || !!state?.busy || !!state?.unknown || !panel?.authorsReady}
++          onChange={(id) => { if (id) { operator.current = id; setSelected(id); setTicket(null); } }} />
++        <Group gap="xs">
++          <Button variant="default" onClick={refresh} disabled={state?.busy}>Обновить состояние</Button>
++          {active
++            ? <Button color="red" onClick={() => void stop()} loading={state?.busy}
++                disabled={!!state?.unknown}>Остановить запуск</Button>
++            : <Button onClick={() => void prepare()} disabled={!canStart}>Подготовить запуск</Button>}
++        </Group>
++      </div>
++      {active && <Text size="sm">Автор: {author ? label(author) : "недоступен"}</Text>}
++      {confirmationCurrent && (
++        <div className="native-assistant__confirmation" role="alert">
++          <Text>Включить рабочий авто от имени «{author ? label(author) : "сотрудник"}»?</Text>
++          <Text size="sm">Бот будет отвечать клиентам по новым обращениям. Заявки в работе, переносы и претензии остаются сотрудникам.</Text>
++          <Group gap="xs">
++            <Button variant="default" onClick={() => setTicket(null)}>Отмена</Button>
++            <Button onClick={() => void start()} disabled={state?.busy || !!state?.unknown}>Подтверждаю запуск авто</Button>
++          </Group>
++        </div>
++      )}
++      {(error || state?.unknown || state?.error) && <Text role="alert" c="var(--lc-warning-text)">
++        {error || (state?.unknown ? "Результат команды пока неизвестен. Повтор не отправляется — проверьте состояние" : "Связь с сервером не подтверждена. Последнее состояние сохранено")}
++      </Text>}
++      {confirmed && !active && !view.start_available && <Text size="sm">Серверный запуск ещё не подготовлен. Авто выключено.</Text>}
++      <Text size="xs" c="dimmed">
++        {state?.lastConfirmedAt ? `Сервер проверен: ${new Date(state.lastConfirmedAt).toLocaleTimeString("ru-RU")}. ` : ""}
++        Закрытие этой страницы не останавливает бота. Для остановки используйте кнопку выше.
++      </Text>
++      <NativeDialogQueue key={`${principal}:${chosen}`} principal={principal} operator={chosen ?? ""}
++        enabled={confirmed && !!panel?.authorsReady && !!author} />
++    </section>
++  );
++}
+--- /dev/null
++++ b/src/features/bot-dialogs/NativeDialogQueue.tsx
+@@ -0,0 +1,141 @@
++import { useEffect, useState } from "react";
++import { Button, Group, Select, Text } from "@mantine/core";
++import { useQuery } from "@tanstack/react-query";
++import { Link } from "react-router-dom";
++import { http } from "@/shared/api/http";
++import { Private } from "@/shared/ui/Private";
++
++interface Preview {
++  body: string; direction: string; sender_type: string;
++  voice_transcript: string; voice_transcript_status: string | null; has_attachments: boolean;
++  body_truncated?: boolean; voice_transcript_truncated?: boolean;
++}
++interface Observation { stage: string; observed_at: number; observation_only: true }
++interface Row {
++  id: string; principal_id: string; operator_id: string; state: string;
++  client_name?: string | null; account_title?: string | null;
++  preview?: Preview | null; observation?: Observation | null;
++}
++interface Page { items: Row[]; total: number; more: boolean; next_offset: number; view: string }
++const UUID = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
++const records: Record<string, string> = {
++  waiting: "Передан боту", paused: "Передан человеку", completed: "Заявка уже есть",
++  closed: "Диалог закрыт", released: "Ответственный изменился",
++};
++const stages: Record<string, string> = {
++  waiting_original_delivery: "Проверял прежнюю отправку", research_pending: "Запрос ответа ожидал завершения",
++  collecting_messages: "Ожидал остальные сообщения", source_review: "Требовалась проверка источника",
++  waiting_transcription: "Ожидал расшифровку", screening: "Проверка условий ожидала завершения",
++  wait: "Ожидал клиента", needs_operator: "Требовался сотрудник", prior_attempt_review: "Требовалась проверка прежнего запроса",
++  waiting_executor: "Форма подготовлена · ожидал исполнителя", source_changed: "Данные изменились",
++  technical_stop: "Техническая остановка", queued: "Запрос в очереди", reserve_action: "Ожидал разрешение действия",
++  consume_action: "Ожидал подтверждение исходного действия", apply: "Обрабатывал подтверждение", dispatch: "Проверял отправку",
++  queue_observing: "Проверял очередь отправки", queue_unknown: "Результат отправки неизвестен",
++  delivered: "Получил подтверждение отправки", delivery_stopped: "Отправка остановлена",
++  blocked: "Остановлен после ошибки", stopped: "Остановлен", expired: "Время запроса истекло",
++};
++
++const nullableText = (value: unknown) => value == null || typeof value === "string";
++const optionalFlag = (value: unknown) => value === undefined || typeof value === "boolean";
++function validRow(row: Row, principal: string, operator: string) {
++  return row && typeof row === "object" && typeof row.id === "string" && UUID.test(row.id)
++    && row.principal_id === principal && row.operator_id === operator
++    && typeof row.state === "string" && Object.hasOwn(records, row.state)
++    && nullableText(row.client_name) && nullableText(row.account_title)
++    && (row.preview == null || typeof row.preview === "object"
++      && typeof row.preview.body === "string" && typeof row.preview.voice_transcript === "string"
++      && typeof row.preview.direction === "string" && typeof row.preview.sender_type === "string"
++      && nullableText(row.preview.voice_transcript_status) && typeof row.preview.has_attachments === "boolean"
++      && optionalFlag(row.preview.body_truncated) && optionalFlag(row.preview.voice_transcript_truncated));
++}
++
++function previewText(row: Row) {
++  const p = row.preview;
++  if (!p) return { who: "История", text: "Сообщений пока нет" };
++  const who = p.sender_type === "system" ? "Система" : p.sender_type === "bot" ? "Автоответ"
++    : p.direction === "in" && p.sender_type === "client" ? "Клиент" : "Сотрудник";
++  if (p.voice_transcript_status === "done" && p.voice_transcript) return { who, text: "Расшифровка: " + p.voice_transcript + (p.voice_transcript_truncated ? "…" : "") };
++  if (p.body) return { who, text: p.body + (p.body_truncated ? "…" : "") };
++  if (["running", "pending", "queued", "processing", "transcribing"].includes(p.voice_transcript_status ?? "")) return { who, text: "Голосовое сообщение · расшифровка ещё готовится" };
++  return { who, text: p.has_attachments ? "Вложение" : "Сообщение без текста" };
++}
++
++/** SQL queue belongs to the actual admin/author. Observations grant no actions. */
++export function NativeDialogQueue({ principal, operator, enabled }: { principal: string; operator: string; enabled: boolean }) {
++  const [view, setView] = useState("active");
++  const [limit, setLimit] = useState("25");
++  const [offset, setOffset] = useState(0);
++  const ready = enabled && UUID.test(principal) && UUID.test(operator);
++  const query = useQuery({
++    queryKey: ["native-assistant-dialogs", principal, operator, view, limit, offset],
++    enabled: ready,
++    retry: false, staleTime: 0, refetchInterval: 5000, refetchOnWindowFocus: true,
++    queryFn: async ({ signal }) => {
++      if (!ready) throw Error("Аккаунт и автор не подтверждены");
++      const value = await http.get<Page>(`/bot-dialogs/assistant/dialogs?view=${view}&operator_id=${encodeURIComponent(operator)}&limit=${limit}&offset=${offset}`, { signal });
++      if (!value || !Array.isArray(value.items) || value.items.length > Number(limit)
++          || value.view !== view || !Number.isSafeInteger(value.total) || value.total < 0
++          || typeof value.more !== "boolean" || value.next_offset !== offset + value.items.length
++          || value.items.some((row) => !validRow(row, principal, operator))
++          || new Set(value.items.map(row => row.id)).size !== value.items.length) {
++        throw Error("Сервер не подтвердил эту очередь");
++      }
++      return value;
++    },
++  });
++  const data = ready ? query.data : undefined;
++  useEffect(() => {
++    if (data && !query.isError && offset > 0 && offset >= data.total) {
++      setOffset(Math.max(0, Math.floor((data.total - 1) / Number(limit)) * Number(limit)));
++    }
++  }, [data, query.isError, offset, limit]);
++  return (
++    <section className="native-queue" aria-label="Очередь серверного бота">
++      <div className="native-queue__head">
++        <h3>Диалоги серверного бота</h3>
++        <Text size="sm">{!ready || !data || query.isError ? "Количество не подтверждено" : `В этой очереди: ${data.total}`}</Text>
++      </div>
++      <Group className="native-queue__controls" gap="sm" align="end" wrap="wrap">
++        <Select label="Очередь" value={view} allowDeselect={false}
++          data={[{ value: "active", label: "Активные" }, { value: "archive", label: "Архив" }, { value: "all", label: "Все записи" }]}
++          onChange={(v) => { if (v) { setView(v); setOffset(0); } }} />
++        <Select label="Диалогов на странице" value={limit} allowDeselect={false}
++          data={["10", "25", "50", "100"]} onChange={(v) => { if (v) { setLimit(v); setOffset(0); } }} />
++        <Button variant="default" disabled={!ready || query.isFetching} onClick={() => void query.refetch()}>Обновить список</Button>
++      </Group>
++      {!ready && <Text size="sm">Список появится после проверки аккаунта и автора.</Text>}
++      {ready && query.isError && <Text role="alert" c="var(--lc-warning-text)">
++        Не удалось подтвердить очередь. {data ? "Показаны последние полученные записи." : "Список пока неизвестен."}
++      </Text>}
++      {ready && query.isPending && <Text role="status">Проверяем очередь…</Text>}
++      {ready && data && <>
++        <ul className="native-queue__grid" aria-label="Переданные диалоги" aria-busy={query.isFetching}>
++          {data.items.map((row) => {
++            const preview = previewText(row);
++            const observation = row.observation;
++            const stage = observation?.observation_only === true && typeof observation.stage === "string" && Object.hasOwn(stages, observation.stage)
++              && Number.isFinite(observation.observed_at) && observation.observed_at > 0 && observation.observed_at <= 8.64e12 ? observation : null;
++            return <li key={row.id} className="native-queue__dialog">
++              <div className="native-queue__identity">
++                <strong><Private kind="person">{row.client_name || `Диалог ${row.id.slice(0, 8)}`}</Private></strong>
++                <Text size="xs" c="dimmed">{row.account_title || "Источник не указан"}</Text>
++              </div>
++              <Text size="xs" className="native-queue__state">{records[row.state]}</Text>
++              <blockquote><small>{preview.who}</small><Private kind="text">{preview.text}</Private></blockquote>
++              <Text size="sm">{!query.isError && stage ? `Последний этап: ${stages[stage.stage]}` : "Текущий этап не подтверждён"}</Text>
++              {!query.isError && stage && <Text size="xs" c="dimmed">Наблюдение: {new Date(stage.observed_at * 1000).toLocaleTimeString("ru-RU")}</Text>}
++              <Link className="native-queue__open" to={`/chats/${row.id}`}>Открыть диалог</Link>
++            </li>;
++          })}
++        </ul>
++        {!query.isError && data.total === 0 && <Text size="sm">В этой очереди пока нет диалогов.</Text>}
++        <Group className="native-queue__pages" gap="sm" justify="space-between">
++          <Button variant="default" disabled={offset === 0 || query.isFetching} onClick={() => setOffset(Math.max(0, offset - Number(limit)))}>Предыдущая страница</Button>
++          <Text size="sm">Страница {Math.floor(offset / Number(limit)) + 1}</Text>
++          <Button variant="default" disabled={!data.more || query.isFetching || query.isError} onClick={() => setOffset(data.next_offset)}>Следующая страница</Button>
++        </Group>
++      </>}
++      {ready && data && <Text size="xs" c="dimmed">{query.isError ? "Последние данные" : "Список получен"}: {new Date(query.dataUpdatedAt).toLocaleTimeString("ru-RU")}. Этап наблюдения не подтверждает создание заявки или отписку.</Text>}
++    </section>
++  );
++}
+--- /dev/null
++++ b/src/features/bot-dialogs/native-assistant.css
+@@ -0,0 +1,27 @@
++.native-assistant { min-width: 0; padding: var(--lc-space-4); display: grid; gap: var(--lc-space-4); }
++.native-assistant__head, .native-assistant__controls { display: flex; flex-wrap: wrap; gap: var(--lc-space-4); justify-content: space-between; align-items: center; }
++.native-assistant h2 { font-size: var(--mantine-font-size-xl); margin: 0; }
++.native-assistant p { margin: .35em 0 0; color: var(--lc-text-2); }
++.native-assistant__controls > .lc-field { min-width: min(100%, 280px); flex: 1; max-width: 480px; }
++.native-assistant__status { max-width: 36em; }
++.native-assistant__status[data-working] { color: var(--lc-success-text); }
++.native-assistant__confirmation { min-width: 0; display: grid; gap: var(--lc-space-3); padding: var(--lc-space-4); border: 1px solid var(--lc-border); border-radius: var(--lc-radius-lg); }
++.native-assistant__head > *, .native-assistant__controls > * { min-width: 0; max-width: 100%; }
++.native-assistant__confirmation .mantine-Group-root { min-width: 0; }
++.native-assistant .mantine-Button-label { white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
++.native-assistant .mantine-Button-root { height: auto; min-height: var(--line-control-height,40px); padding-block: 8px; }
++.native-queue { display:grid;gap:var(--lc-space-4);border-top:1px solid var(--lc-border);padding-top:var(--lc-space-4);min-width:0; }
++.native-queue h3 { margin:0;font-size:var(--lc-fz-body); }
++.native-queue__head { display:flex;flex-wrap:wrap;gap:var(--lc-space-3);justify-content:space-between; }
++.native-queue__controls>.mantine-InputWrapper-root { flex:1 1 180px;min-width:0;max-width:100%; }
++.native-queue__controls>.mantine-Button-root { flex:0 1 auto;min-width:0;max-width:100%; }
++.native-queue__grid { list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:var(--lc-space-3); }
++.native-queue__dialog { display:grid;align-content:start;gap:var(--lc-space-2);border:1px solid var(--lc-border);border-radius:var(--lc-radius-lg);padding:var(--lc-space-3);min-width:0;overflow-wrap:anywhere;background:var(--lc-bg-1); }
++.native-queue__dialog blockquote { display:grid;gap:var(--lc-space-1);margin:0;border-left:2px solid var(--lc-border);padding:var(--lc-space-2);max-height:10rem;overflow:auto;white-space:pre-wrap; }
++.native-queue__dialog blockquote small { color:var(--lc-text-3); }
++.native-queue__identity { min-width:0; }
++.native-queue__state { justify-self:start;padding:var(--lc-space-1) var(--lc-space-2);border-radius:var(--lc-radius-sm);background:var(--lc-bg-2);color:var(--lc-text-2); }
++.native-queue__open { justify-self:start;font-size:var(--lc-fz-caption);padding-block:var(--lc-space-2);min-height:var(--line-control-height,40px);display:inline-flex;align-items:center;color:var(--lc-accent-text);text-underline-offset:3px; }
++.native-queue__open:hover { color:var(--lc-text-1); }
++.native-queue__open:focus-visible { outline:2px solid var(--lc-focus-border);outline-offset:2px;border-radius:var(--lc-radius-sm); }
++.native-queue__pages>* { min-width:0;max-width:100%; }
+--- /dev/null
++++ b/src/features/bot-dialogs/nativeRunController.d.ts
+@@ -0,0 +1,47 @@
++export interface NativeRunView {
++  principal_id: string;
++  run_id: string | null;
++  operator_id: string | null;
++  generation: number;
++  state: "running" | "stopped" | "blocked";
++  mode: "auto" | "rehearsal";
++  auto_enabled: boolean;
++  configured: boolean;
++  worker_ready: boolean;
++  start_available: boolean;
++}
++
++export interface StartTicket {
++  readonly principal_id: string;
++  readonly operator_id: string;
++  readonly expected_generation: number;
++  readonly observed_at: number;
++}
++
++export interface NativeRunState {
++  view: NativeRunView | null;
++  stale: boolean;
++  lastConfirmedAt: number | null;
++  error: string;
++  busy: boolean;
++  unknown: { operation: "start" | "stop"; principal_id: string; expected_generation: number } | null;
++}
++
++export interface NativeRunController {
++  state: NativeRunState;
++  inspect(): Promise<NativeRunView | null>;
++  prepareStart(): Promise<StartTicket>;
++  start(ticket: StartTicket): Promise<NativeRunView | null>;
++  stop(): Promise<NativeRunView | null>;
++  watch(): void;
++  unwatch(): void;
++}
++
++export function createRun(deps: {
++  get(path: string): Promise<unknown>;
++  post(path: string, body: unknown): Promise<unknown>;
++  identity(): Promise<{ id: string; role: string }>;
++  principal(): string;
++  operator(): string;
++  onChange(state: NativeRunState): void;
++}): NativeRunController;
+--- /dev/null
++++ b/src/features/bot-dialogs/nativeRunController.js
+@@ -0,0 +1,123 @@
++/* Generated from LeadBot ext/assistant-native.js; do not edit independently.
++ * createRun SHA256: 378a3423459b2963cc56a8a463f34d83d844611b5a4ac6fb7992009c242009e8
++ */
++/* eslint @typescript-eslint/no-unused-vars: ["error", { "caughtErrorsIgnorePattern": "^_error$" }] */
++export const createRun = function createRun(deps){
++    if(['get','post','identity','principal','operator'].some(k=>typeof deps[k]!=='function'))throw Error('Нужен серверный контроль аккаунта');
++    const base='/bot-dialogs/assistant/native-run',now=deps.now||Date.now;
++    const schedule=deps.schedule||setTimeout,clear=deps.clear||clearTimeout;
++    const state={view:null,stale:true,lastConfirmedAt:null,error:'',busy:false,unknown:null};
++    let epoch=0,timer=null,watching=false,pending=null,prepared=null;
++    const emit=()=>deps.onChange?.(state);
++    const uuid=x=>typeof x==='string'&&/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(x);
++    const failure=message=>Error(message);
++    async function identity(){
++      const me=await deps.identity(),principal=String(deps.principal()||'');
++      if(me?.role!=='admin'||!uuid(me.id)||me.id!==principal
++          ||state.view&&state.view.principal_id!==principal||state.unknown&&state.unknown.principal_id!==principal){
++        unwatch();state.view=null;state.unknown=null;state.stale=true;state.lastConfirmedAt=null;
++        state.error='Аккаунт изменился. Откройте панель под своим администратором';emit();
++        throw failure(state.error);
++      }
++      return principal;
++    }
++    function snapshot(value,principal,readiness){
++      if(!value||typeof value!=='object'||Array.isArray(value)||value.principal_id!==principal
++          ||!['running','stopped','blocked'].includes(value.state)||!['auto','rehearsal'].includes(value.mode)
++          ||!Number.isSafeInteger(value.generation)||value.generation<0
++          ||typeof value.auto_enabled!=='boolean'||value.auto_enabled!==(value.state==='running'&&value.mode==='auto')
++          ||value.generation===0&&(value.run_id!==null||value.operator_id!==null||value.state!=='stopped')
++          ||value.generation>0&&(!uuid(value.run_id)||!uuid(value.operator_id)))throw failure('Сервер не подтвердил состояние выбранного аккаунта');
++      if(readiness&&(value.native_supported!==true||value.observer_disconnect_stops_run!==false
++          ||['configured','worker_ready','start_available'].some(k=>typeof value[k]!=='boolean')
++          ||value.start_available&&(!value.configured||!value.worker_ready)))throw failure('Серверный запуск ещё не подтверждён');
++      return {...value};
++    }
++    function accept(value,principal,generation){
++      if(generation!==epoch||String(deps.principal()||'')!==principal)return null;
++      if(state.view?.principal_id===principal&&value.generation<state.view.generation)throw failure('Получено устаревшее состояние сервера');
++      state.view=value;state.stale=false;state.lastConfirmedAt=now();state.error='';
++      if(state.unknown?.principal_id===principal&&value.generation>state.unknown.expected_generation)state.unknown=null;
++      emit();return value;
++    }
++    function inspect(){
++      if(pending?.epoch===epoch)return pending.promise;
++      const entry={epoch,promise:null};
++      entry.promise=(async()=>{
++        try{
++          const principal=await identity();
++          if(entry.epoch!==epoch)return null;
++          const value=snapshot(await deps.get(base),principal,true);
++          return accept(value,principal,entry.epoch);
++        }catch(error){
++          if(entry.epoch===epoch){state.stale=true;state.error='Связь с сервером не подтверждена. Последнее состояние сохранено';emit()}
++          throw error;
++        }finally{if(pending===entry)pending=null}
++      })();pending=entry;return entry.promise;
++    }
++    async function prepareStart(){
++      if(state.busy||state.unknown)throw failure('Сначала проверьте результат прежней команды');
++      const view=await inspect(),operator=String(deps.operator()||'');
++      if(!view||state.stale||view.state==='running'||!view.start_available||!uuid(operator))throw failure('Проверьте автора и готовность серверного обработчика');
++      prepared=Object.freeze({principal_id:view.principal_id,operator_id:operator,
++        expected_generation:view.generation,observed_at:now()});
++      return prepared;
++    }
++    async function start(ticket){
++      if(state.busy||state.unknown||ticket!==prepared||!ticket
++          ||now()-ticket.observed_at<0||now()-ticket.observed_at>60000
++          ||ticket.operator_id!==String(deps.operator()||''))throw failure('Подтверждение устарело. Проверьте запуск заново');
++      const generation=epoch;prepared=null;state.busy=true;state.error='';emit();
++      try{
++        const view=await inspect();
++        if(generation!==epoch||!view||state.stale||view.principal_id!==ticket.principal_id
++            ||view.generation!==ticket.expected_generation||view.state==='running'||!view.start_available
++            ||ticket.operator_id!==String(deps.operator()||''))throw failure('Состояние или автор изменились. Авто не запущено');
++        state.unknown={operation:'start',principal_id:ticket.principal_id,expected_generation:ticket.expected_generation};
++        const value=snapshot(await deps.post(base+'/start',{expected_principal_id:ticket.principal_id,
++          operator_id:ticket.operator_id,expected_generation:ticket.expected_generation}),ticket.principal_id,false);
++        if(value.state!=='running'||value.mode!=='auto'||value.operator_id!==ticket.operator_id
++            ||value.generation!==ticket.expected_generation+1)throw failure('Исходный запуск пока не подтверждён');
++        return accept({...view,...value},ticket.principal_id,generation);
++      }catch(error){
++        if(generation===epoch){
++          if(Number.isInteger(error?.status)&&error.status>=400&&error.status<500)state.unknown=null;
++          state.stale=true;state.error=state.unknown?'Результат запуска пока неизвестен. Повтор не отправлялся':error.message;emit();
++        }throw error;
++      }finally{if(generation===epoch){state.busy=false;emit()}}
++    }
++    async function stop(){
++      if(state.busy||state.unknown?.operation==='stop')throw failure('Результат прежней команды ещё проверяется');
++      // Stop exactly the Run the owner saw and selected. A preliminary GET
++      // must not silently substitute another tab's later launch. The server
++      // rechecks actual principal and generation before the stop transaction.
++      const view=state.view;
++      if(!view||view.principal_id!==String(deps.principal()||''))throw failure('Не подтверждён аккаунт для остановки');
++      if(view.state!=='running'){
++        if(state.unknown)throw failure('Прежний запуск пока не подтверждён. Остановка ещё не выполнена');
++        return view;
++      }
++      const generation=epoch;state.busy=true;state.error='';prepared=null;
++      state.unknown={operation:'stop',principal_id:view.principal_id,expected_generation:view.generation};emit();
++      try{
++        const value=snapshot(await deps.post(base+'/stop',{expected_principal_id:view.principal_id,
++          expected_generation:view.generation}),view.principal_id,false);
++        if(value.state!=='stopped'||value.generation!==view.generation+1)throw failure('Остановка сервера пока не подтверждена');
++        return accept({...view,...value},view.principal_id,generation);
++      }catch(error){
++        if(generation===epoch){
++          if(Number.isInteger(error?.status)&&error.status>=400&&error.status<500)state.unknown=null;
++          state.stale=true;state.error='Остановка пока не подтверждена. Повтор не отправлялся';emit();
++        }throw error;
++      }finally{if(generation===epoch){state.busy=false;emit()}}
++    }
++    function watch(){
++      if(watching)return;watching=true;const generation=epoch;
++      const tick=async()=>{
++        try{await inspect()}catch(_error){/* The last confirmed state remains visibly stale. */}
++        if(watching&&generation===epoch)timer=schedule(tick,5000);
++      };tick();
++    }
++    function unwatch(){watching=false;epoch++;prepared=null;state.busy=false;if(timer!==null)clear(timer);timer=null}
++    return {state,inspect,prepareStart,start,stop,watch,unwatch};
++  };
+--- a/src/features/settings/leadbot/LeadbotTab.tsx
++++ b/src/features/settings/leadbot/LeadbotTab.tsx
+@@ -2,6 +2,7 @@
+ import { Button, Checkbox, Group, Select, Stack, Text, TextInput, Textarea } from "@mantine/core";
+ 
+ import { Link } from "react-router-dom";
++import { NativeAssistantPanel } from "@/features/bot-dialogs/NativeAssistantPanel";
+ import { ApiError } from "@/shared/api/http";
+ import { выбралСам } from "@/features/chats/выборДиалога";
+ import { PageHeader } from "@/shared/ui/PageHeader";
+@@ -961,6 +962,8 @@
+         </Text>
+       )}
+ 
++      <NativeAssistantPanel />
++
+       <StateHeader onlyTrouble={onlyTrouble} setOnlyTrouble={setOnlyTrouble} />
+ 
+       <div className="lb-cols">
+--- /dev/null
++++ b/src/test/NativeAssistantPanel0211.test.tsx
+@@ -0,0 +1,235 @@
++import { act, screen, waitFor } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { NativeAssistantPanel } from "@/features/bot-dialogs/NativeAssistantPanel";
++import { LeadbotTab } from "@/features/settings/leadbot/LeadbotTab";
++import { useSessionStore } from "@/shared/stores/sessionStore";
++import { fakeUser, resetSessionStore } from "./helpers";
++import { renderWithProviders } from "./render";
++
++const owner = fakeUser.id;
++const author = "33333333-3333-4333-8333-333333333333";
++const runId = "44444444-4444-4444-8444-444444444444";
++const nativePath = "/bot-dialogs/assistant/native-run";
++function stopped() {
++  return { principal_id: owner, run_id: null as string | null, operator_id: null as string | null,
++    state: "stopped", generation: 0, mode: "auto", auto_enabled: false,
++    native_supported: true, configured: true, worker_ready: true, start_available: true,
++    observer_disconnect_stops_run: false };
++}
++function running(mode = "auto") {
++  return { ...stopped(), run_id: runId, operator_id: owner, generation: 1,
++    state: "running", auto_enabled: mode === "auto", mode };
++}
++type Request = { path: string; method: string; body: Record<string, unknown> | null };
++let requests: Request[];
++let value: ReturnType<typeof stopped>;
++let readError: boolean;
++let unknownStart: boolean;
++let capabilitiesOwner: string;
++let pendingRead: Promise<Response> | null;
++
++beforeEach(() => {
++  requests = []; value = stopped(); readError = false; unknownStart = false;
++  capabilitiesOwner = owner; pendingRead = null;
++  resetSessionStore({ user: { ...fakeUser, role: "admin" }, accessToken: "synthetic", permissions: ["bots:manage"] });
++  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
++    const path = String(input).replace("/api/v1", "");
++    const method = init?.method ?? "GET";
++    const body = init?.body ? JSON.parse(String(init.body)) : null;
++    requests.push({ path, method, body });
++    const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
++    if (path === "/leadbot" && method === "GET") return json({
++      connection: { url: "", token_set: false, source: "env" },
++      is_ready: false, enabled: false, mode: "suggest", context_messages: 30,
++      account_ids: [], accounts: [],
++    });
++    if (path.startsWith("/leadbot/") && method === "GET") return json({ items: [], in_progress: [], silent: [] });
++    if (path === "/auth/me") return json({ id: useSessionStore.getState().user?.id, role: "admin" });
++    if (path.endsWith("/capabilities")) return json({ principal: { id: capabilitiesOwner }, authors: [
++      { id: owner, full_name: "Анна" }, { id: author, full_name: "Анна" },
++    ] });
++    if (path.startsWith("/bot-dialogs/assistant/dialogs?")) {
++      const query = new URLSearchParams(path.split("?")[1]);
++      return json({ items: [], total: 0, more: false, next_offset: Number(query.get("offset")), view: query.get("view") });
++    }
++    if (path === nativePath && method === "GET") {
++      if (pendingRead) return pendingRead;
++      if (readError) return json({ error: { code: "unavailable", message: "opaque_internal_error" } }, 503);
++      return json(value);
++    }
++    if (path === nativePath + "/start") {
++      value = { ...running(), operator_id: String(body.operator_id) };
++      if (unknownStart) throw new TypeError("lost acknowledgement");
++      return json(value);
++    }
++    if (path === nativePath + "/stop") {
++      value = { ...value, state: "stopped", auto_enabled: false, generation: value.generation + 1 };
++      return json(value);
++    }
++    throw Error("Unexpected route " + path);
++  }));
++});
++afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
++const mutations = () => requests.filter((r) => r.method !== "GET");
++async function mount() {
++  const rendered = renderWithProviders(<NativeAssistantPanel />);
++  await screen.findByText("Серверный бот остановлен");
++  await waitFor(() => expect(screen.getByRole("button", { name: "Подготовить запуск" })).toBeEnabled());
++  return rendered;
++}
++
++it("mount, explicit refresh and unmount observe without a Run or business write", async () => {
++  const ui = await mount();
++  await userEvent.click(screen.getByRole("button", { name: "Обновить состояние" }));
++  ui.unmount();
++  expect(mutations()).toEqual([]);
++  expect(requests.every((r) => ["/auth/me", nativePath, "/bot-dialogs/assistant/capabilities", "/bot-dialogs/assistant/dialogs"].includes(r.path.split("?")[0]))).toBe(true);
++});
++
++it("only confirmed explicit launch posts actual principal, selected author and generation", async () => {
++  const ui = await mount();
++  await userEvent.click(screen.getByRole("button", { name: "Подготовить запуск" }));
++  expect(mutations()).toEqual([]);
++  await userEvent.click(screen.getByRole("button", { name: "Подтверждаю запуск авто" }));
++  await screen.findByText("Бот работает на сервере");
++  expect(mutations()).toEqual([{ path: nativePath + "/start", method: "POST",
++    body: { expected_principal_id: owner, operator_id: owner, expected_generation: 0 } }]);
++  ui.unmount();
++  expect(value.state).toBe("running");
++  expect(mutations()).toHaveLength(1);
++});
++
++it("explicit stop uses the displayed Run generation and closing never stops it", async () => {
++  value = running();
++  renderWithProviders(<NativeAssistantPanel />);
++  await screen.findByText("Бот работает на сервере");
++  await userEvent.click(screen.getByRole("button", { name: "Остановить запуск" }));
++  await screen.findByText("Серверный бот остановлен");
++  expect(mutations()).toEqual([{ path: nativePath + "/stop", method: "POST",
++    body: { expected_principal_id: owner, expected_generation: 1 } }]);
++});
++
++it("failed status retains a visibly stale running Run and its stop control", async () => {
++  value = running(); renderWithProviders(<NativeAssistantPanel />);
++  await screen.findByText("Бот работает на сервере");
++  readError = true;
++  await userEvent.click(screen.getByRole("button", { name: "Обновить состояние" }));
++  await screen.findByText("Связь потеряна · показано последнее подтверждённое состояние");
++  expect(screen.getByRole("button", { name: "Остановить запуск" })).toBeEnabled();
++  expect(screen.queryByText("Серверный бот остановлен")).not.toBeInTheDocument();
++  expect(screen.queryByText("opaque_internal_error")).not.toBeInTheDocument();
++  expect(mutations()).toEqual([]);
++});
++
++it("unknown launch is never resubmitted; GET can observe its original outcome", async () => {
++  await mount(); unknownStart = true;
++  await userEvent.click(screen.getByRole("button", { name: "Подготовить запуск" }));
++  await userEvent.click(screen.getByRole("button", { name: "Подтверждаю запуск авто" }));
++  await screen.findByText("Запуск пока не подтверждён. Автоматического повтора не было");
++  expect(screen.getByRole("button", { name: "Подготовить запуск" })).toBeDisabled();
++  await userEvent.click(screen.getByRole("button", { name: "Обновить состояние" }));
++  await screen.findByText("Бот работает на сервере");
++  expect(screen.queryByText("Запуск пока не подтверждён. Автоматического повтора не было")).not.toBeInTheDocument();
++  expect(mutations()).toHaveLength(1);
++});
++
++it("a persisted running Run with no ready worker is never green working and remains stoppable", async () => {
++  value = { ...running(), worker_ready: false, start_available: false };
++  renderWithProviders(<NativeAssistantPanel />);
++  await screen.findByText("Авто включено · работа обработчика не подтверждена");
++  expect(screen.getByRole("status")).not.toHaveAttribute("data-working");
++  expect(screen.getByRole("button", { name: "Остановить запуск" })).toBeEnabled();
++  expect(mutations()).toEqual([]);
++});
++
++it("stored server rehearsal is not advertised as working customer Auto", async () => {
++  value = running("rehearsal"); renderWithProviders(<NativeAssistantPanel />);
++  await screen.findByText("Серверный запуск без отправок");
++  expect(screen.queryByText("Бот работает на сервере")).not.toBeInTheDocument();
++  expect(mutations()).toEqual([]);
++});
++
++it("different capability principal never enables launch or substitutes authors", async () => {
++  capabilitiesOwner = author; renderWithProviders(<NativeAssistantPanel />);
++  await screen.findByText("Серверный бот остановлен");
++  expect(screen.getByRole("button", { name: "Подготовить запуск" })).toBeDisabled();
++  expect(mutations()).toEqual([]);
++});
++
++it("explicit refresh can recover author list after its initial principal mismatch", async () => {
++  capabilitiesOwner = author; renderWithProviders(<NativeAssistantPanel />);
++  await screen.findByText("Серверный бот остановлен");
++  expect(screen.getByRole("button", { name: "Подготовить запуск" })).toBeDisabled();
++  capabilitiesOwner = owner;
++  await userEvent.click(screen.getByRole("button", { name: "Обновить состояние" }));
++  await waitFor(() => expect(screen.getByRole("button", { name: "Подготовить запуск" })).toBeEnabled());
++  expect(mutations()).toEqual([]);
++});
++
++it.each(["manager", "head", "observer"] as const)("%s cannot initialize admin controls or poll", (role) => {
++  resetSessionStore({ user: { ...fakeUser, role }, permissions: [] });
++  renderWithProviders(<NativeAssistantPanel />);
++  expect(screen.queryByRole("region", { name: "Серверный LeadBot" })).not.toBeInTheDocument();
++  expect(requests).toEqual([]);
++});
++
++it("admin without bots permission cannot initialize controls", () => {
++  resetSessionStore({ user: { ...fakeUser, role: "admin" }, permissions: [] });
++  renderWithProviders(<NativeAssistantPanel />);
++  expect(requests).toEqual([]);
++});
++
++it("same-name authors remain distinct and the selected UUID is used", async () => {
++  await mount();
++  await userEvent.click(screen.getByRole("textbox", { name: "От чьего имени отвечать" }));
++  await userEvent.click(await screen.findByRole("option", { name: "Анна · 33333333" }));
++  await userEvent.click(screen.getByRole("button", { name: "Подготовить запуск" }));
++  await userEvent.click(screen.getByRole("button", { name: "Подтверждаю запуск авто" }));
++  await screen.findByText("Бот работает на сервере");
++  expect(mutations()[0].body?.operator_id).toBe(author);
++});
++
++it("a new observed Run invalidates an older displayed confirmation", async () => {
++  await mount();
++  await userEvent.click(screen.getByRole("button", { name: "Подготовить запуск" }));
++  expect(screen.getByRole("button", { name: "Подтверждаю запуск авто" })).toBeEnabled();
++  value = running();
++  await userEvent.click(screen.getByRole("button", { name: "Обновить состояние" }));
++  await screen.findByText("Бот работает на сервере");
++  expect(screen.queryByRole("button", { name: "Подтверждаю запуск авто" })).not.toBeInTheDocument();
++  expect(mutations()).toEqual([]);
++});
++
++it("an account change discards prior confirmation without a stop or launch", async () => {
++  await mount();
++  await userEvent.click(screen.getByRole("button", { name: "Подготовить запуск" }));
++  act(() => useSessionStore.setState({ user: { ...fakeUser, id: author, role: "manager" }, permissions: [] }));
++  expect(screen.queryByRole("button", { name: "Подтверждаю запуск авто" })).not.toBeInTheDocument();
++  expect(mutations()).toEqual([]);
++});
++
++it("unmount before a late status read does not start or stop anything", async () => {
++  let resolve: (response: Response) => void = () => {};
++  pendingRead = new Promise<Response>((done) => { resolve = done; });
++  const ui = renderWithProviders(<NativeAssistantPanel />);
++  await waitFor(() => expect(requests.some((r) => r.path === nativePath)).toBe(true));
++  ui.unmount();
++  await act(async () => resolve(new Response(JSON.stringify(running()), { status: 200 })));
++  expect(mutations()).toEqual([]);
++});
++
++it("starts and stops the same native Run from the built-in LeadBot settings page", async () => {
++  renderWithProviders(<LeadbotTab />, { route: "/settings/leadbot" });
++  await screen.findByRole("region", { name: "Серверный LeadBot" });
++  await waitFor(() => expect(screen.getByRole("button", { name: "Подготовить запуск" })).toBeEnabled());
++  expect(mutations()).toEqual([]);
++  await userEvent.click(screen.getByRole("button", { name: "Подготовить запуск" }));
++  await userEvent.click(screen.getByRole("button", { name: "Подтверждаю запуск авто" }));
++  await screen.findByText("Бот работает на сервере");
++  await userEvent.click(screen.getByRole("button", { name: "Остановить запуск" }));
++  await screen.findByText("Серверный бот остановлен");
++  expect(mutations().map(({path, method}) => [method, path])).toEqual([
++    ["POST", nativePath + "/start"], ["POST", nativePath + "/stop"],
++  ]);
++});
